@@ -68,7 +68,7 @@ def construct_prompt(input_dic: dict, template: ConversationPrompt, max_tokens=2
     message_tok_num = num_tokens_from_messages(messages=messages, model=model)
     # the sum of tokens of messages and completion should be less than 4096
     if message_tok_num + max_tokens > 4096:
-        max_tokens = 4096 - message_tok_num - 100 # 100 is a buffer
+        max_tokens = max(4096 - message_tok_num - 100, 0) # 100 is a buffer
         logging.warning("since the message is too long ({}), reduce the max_tokens of completion to {}".format(message_tok_num, max_tokens))
 
     return messages, max_tokens

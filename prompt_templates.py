@@ -7,12 +7,36 @@ class ConversationPrompt(object):
             "You are a creative assistant. " +
             "Your responsibility is to understand the user's instructions and help brainstorm novel ideas."
         )
+        # filter based on keywords that are not suitable for language models.
+        self.blacklist = [
+            "image",
+            "images",
+            "graph",
+            "graphs",
+            "picture",
+            "pictures",
+            "file",
+            "files",
+            "map",
+            "maps",
+            "draw",
+            "plot",
+            "go to",
+            "video",
+            "audio",
+            "music",
+            "flowchart",
+            "diagram",
+        ]
+        
 
     def extract_content(self, content:str):
         content = re.sub(r"(None\.|None|none\.|none)", "", content) # Remove the "None" at the end
         attributes = re.split(self.seperator, content)
         # Remove any empty elements from the list
         attributes = [attr.strip() for attr in attributes if attr.strip() != ""]
+        # Remove any elements that has words in the blacklist
+        attributes = [attr for attr in attributes if not any([word in attr for word in self.blacklist])] 
         return attributes
     
 

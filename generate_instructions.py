@@ -62,6 +62,7 @@ def main():
         raise ValueError("Input file {} does not exist.".format(args.data_file))
     
     all_instances = []
+    instances = instances[:60]  ## TODO: remove this line
     for ins in instances:
         id, x, atts, cost = ins["id"], ins["input"], ins["content"], ins["cost"]  # ins["attributes"]  
         for idx, att in enumerate(atts):
