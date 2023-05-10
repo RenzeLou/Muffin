@@ -24,9 +24,12 @@ class ConversationPrompt(object):
             "go to",
             "video",
             "audio",
+            "poster",
             "music",
             "flowchart",
             "diagram",
+            # "media",
+            # "media post",
         ]
         
 
