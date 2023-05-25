@@ -93,11 +93,24 @@ def openai_chat_completion(
     **decoding_kwargs,
 ):
     '''
-    for each input x, do single-turn chat completion
+    For each input x, do single-turn chat completion
+    
+    args:
+        - input_dic: a dictionary of the input.
+        - template: a string template that is waiting for filling in the values in the input_dic.
+    return:
+        - content: the content of the response
+        - cost: the number of tokens used by this completion
+        
+    return (None, None) if the input is too long (exceeds the max length of ChatGPT)
     '''
     batch_decoding_args = copy.deepcopy(decoding_args)
     # construct the prompt, and try to reduce max_tokens of completion if the message is too long
     messages, batch_decoding_args.max_tokens = construct_prompt(input_dic, template, max_tokens=batch_decoding_args.max_tokens, model="gpt-3.5-turbo-0301")
+    if batch_decoding_args.max_tokens == 0:
+        # the input is too long that exceeds the max length of ChatGPT (4096), return None to skip this instance
+        return None, None
+    
     shared_kwargs = dict(
         model=model_name,
         messages=messages,

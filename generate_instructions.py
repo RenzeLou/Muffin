@@ -15,7 +15,7 @@ from tenacity import (
     wait_random_exponential,
 )  # for exponential backoff
 
-from prompt_templates import ConversationPromptTask,ConversationPrompt
+from prompt_templates import ConversationPrompt, ConversationPromptTask, ConversationPromptTask_2
 from chat_completion import openai_chat_completion
 
 
@@ -39,19 +39,36 @@ class OpenAIDecodingArguments(object):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--api_key", type=str, required=True)
+    parser.add_argument("--api_key", type=str, 
+                        default=None, help="not recommended; better to set env varaible.")
+    parser.add_argument("--path", type=str, 
+                        default='./data/dummy/', help='source file & target save path.')
     parser.add_argument("--data_file", type=str,
-                        default='./data/dummy/SuperNI_attributes.json')
-    # parser.add_argument("--save_file", type=str,
-    #                     default='./data/dummy/attributes.json')
+                        default='add_attributes.json')
+    parser.add_argument("--save_file", type=str,
+                        default='add_generated_instructions.json')
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--template", type=int, 
+                        default=1, help="choice value indicating different templates.")
+    parser.add_argument("--overwrite", action="store_true", help="overwrite the save file if it exists.")
 
     args, unparsed = parser.parse_known_args()
     if unparsed:
         raise ValueError(unparsed)
 
-    openai.api_key = args.api_key
-    template = ConversationPromptTask()
+    openai.api_key = os.getenv("OPENAI_API_KEY") if args.api_key is None else args.api_key
+    args.data_file = os.path.join(args.path, args.data_file)
+    args.save_file = os.path.join(args.path, args.save_file)
+    
+    if os.path.exists(args.save_file) and not args.overwrite:
+        raise ValueError("Save file {} already exists, set --overwrite to overwrite it.".format(args.save_file))
+    
+    if args.template == 1:
+        template = ConversationPromptTask() # following hints
+    elif args.template == 2:
+        template = ConversationPromptTask_2() # shifting attributes
+    else:
+        raise ValueError("template value must be 1 or 2.")
     decoding_args = OpenAIDecodingArguments()
 
     # read the input files
@@ -62,25 +79,31 @@ def main():
         raise ValueError("Input file {} does not exist.".format(args.data_file))
     
     all_instances = []
-    instances = instances[:60]  ## TODO: remove this line
+    instances = instances[2:]  ## TODO: remove this line (used for quck testing)
     for ins in instances:
-        id, x, atts, cost = ins["id"], ins["input"], ins["content"], ins["cost"]  # ins["attributes"]  
+        id, x, atts, cost = ins["id"], ins["input"], ins["attributes"], ins["cost"]  # ins["content"]   
         for idx, att in enumerate(atts):
+            # construct instance into a new dict that can be fiiled into the template
             all_instances.append({"id": id + f"-hint{idx}", "input": x, "hint": att, "cost": cost})
             
-    outputs = []
+    outputs, skip_num = [], 0
     for i, instance in tqdm(enumerate(all_instances), total=len(all_instances)):
         content, cost = openai_chat_completion(instance, template, decoding_args)
+        if content is None:
+            skip_num += 1
+            continue
         instance.update({"instructions": content})
         instance["cost"] += cost
-        # print(instance)
-        # exit()
         outputs.append(instance)
 
     # write the output files
-    save_file = args.data_file.replace("_attributes.json", "_instructions.json")
+    # save_file = args.data_file.replace("_attributes.json", "_instructions.json")
+    save_file = args.save_file
     with open(save_file, "w") as f:
         json.dump(outputs, f, indent=2)
+    
+    print("==> saved to {}".format(save_file))
+    print("==> skip: {} ; complete: {}".format(skip_num, len(outputs)))
         
 if __name__ == "__main__":
     main()

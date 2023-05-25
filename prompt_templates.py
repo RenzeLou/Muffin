@@ -1,4 +1,4 @@
-
+# This file contains the prompt templates used in chat completion.
 import re
 
 class ConversationPrompt(object):
@@ -67,6 +67,7 @@ class ConversationPromptAttribute(ConversationPrompt):
         
         
 class ConversationPromptTask(ConversationPrompt):
+    ''' following the hint to brainstorm novel task instructions '''
     def __init__(self):
         super().__init__()
         self.seperator = r"Task \d+:" ## Task 1: Task 2: .. Task n:
@@ -89,6 +90,32 @@ class ConversationPromptTask(ConversationPrompt):
             "Task 1:\n"
         )
 
+
+class ConversationPromptTask_2(ConversationPrompt):
+    ''' shifting the attribute to generate task instructions '''
+    def __init__(self):
+        super().__init__()
+        self.seperator = r"Task \d+:" ## Task 1: Task 2: .. Task n:
+        self.requirement_prompt = (
+            "1. Brainstorm as many textual tasks as possible. If you think there are no more suitable tasks, end up with 'None'.\n" + 
+            "2. Your tasks can be applied to the input to shift its attribute.\n" +
+            "3. Each task must be indivisible (one task, one intention).\n" +
+            "4. Avoid tasks requiring additional context, i.e., tasks must be easily solved/answered using only the input.\n" +
+            "5. Please prioritize your most confident predictions.\n"
+        )
+        self.query_prompt = (
+            "### Input:\n" + 
+            "{input}\n\n" +
+            "### Attribute:\n" +
+            "{hint}\n\n" +
+            "### Instruction:\n" +
+            "Based on the above information, what kind of textual tasks can you develop that can shift the input's attribute?\n\n" +
+            "### Requirements:\n" +
+            self.requirement_prompt + "\n" +
+            "Task 1:\n"
+        )
+        
+        
         
 if __name__ == "__main__":
     # prompt = ConversationPromptAttribute()
@@ -114,7 +141,8 @@ if __name__ == "__main__":
         "Count the number of characters that are neither vowels nor consonants (i.e., digits and special characters) in the input.\n\n" + \
         "None."
     
-    prompt = ConversationPromptTask()
+    # prompt = ConversationPromptTask()
+    prompt = ConversationPromptTask_2()
     print(prompt.extract_content(test_content))
     
 

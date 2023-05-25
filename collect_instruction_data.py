@@ -25,9 +25,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--training_data_path",type=str,default='../Tk-Instruct/data/tasks/def_segmentation')
     parser.add_argument("--split_path",type=str,default="../Tk-Instruct/data/splits/default")
-    parser.add_argument("--save_path",type=str,default="./data/dummy")
-    parser.add_argument("--num_dataset",type=int,default=20)
-    parser.add_argument("--num_instance",type=int,default=10)
+    parser.add_argument("--save_path",type=str,default="./data/SuperNI")
+    parser.add_argument("--num_dataset",type=int,default=100)
+    parser.add_argument("--num_instance",type=int,default=5)
     parser.add_argument("--seed",type=int,default=42)
 
     args, unparsed = parser.parse_known_args()
@@ -85,7 +85,7 @@ def main():
     
     print("==> save SuperNI data at {}, total {} instances".format(save_path, ins_cnt))
     
-    with open(os.path.join(save_path, "SuperNI.json"), "w") as f:
+    with open(os.path.join(save_path, "original_collection.json"), "w") as f:
         json.dump(resulting_data, f, indent=2)
         
 if __name__ == "__main__":
