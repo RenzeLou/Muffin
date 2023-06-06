@@ -1,6 +1,7 @@
 # This file contains the prompt templates used in chat completion.
 import re
 
+# parent class
 class ConversationPrompt(object):
     def __init__(self):
         self.system = (
@@ -31,19 +32,20 @@ class ConversationPrompt(object):
             # "media",
             # "media post",
         ]
-        
 
     def extract_content(self, content:str):
-        content = re.sub(r"(None\.|None|none\.|none)", "", content) # Remove the "None" at the end
-        attributes = re.split(self.seperator, content)
+        # Remove the "None" at the end
+        # content = re.sub(r"(None\.|None|none\.|none)", "", content) 
+        content = re.sub(r"(None\.?|none\.?)+$", "", content)
+        items = re.split(self.seperator, content)
         # Remove any empty elements from the list
-        attributes = [attr.strip() for attr in attributes if attr.strip() != ""]
+        items = [item.strip() for item in items if item.strip() != ""]
         # Remove any elements that has words in the blacklist
-        attributes = [attr for attr in attributes if not any([word in attr for word in self.blacklist])] 
-        return attributes
+        items = [item for item in items if not any([word in item for word in self.blacklist])] 
+        return items
     
 
-
+# used for generating textual attributes 
 class ConversationPromptAttribute(ConversationPrompt):
     def __init__(self):
         super().__init__()
@@ -65,7 +67,7 @@ class ConversationPromptAttribute(ConversationPrompt):
             "Attribute 1:\n"
         )
         
-        
+# used for generating task instructions     
 class ConversationPromptTask(ConversationPrompt):
     ''' following the hint to brainstorm novel task instructions '''
     def __init__(self):
@@ -115,8 +117,44 @@ class ConversationPromptTask_2(ConversationPrompt):
             "Task 1:\n"
         )
         
+
+# used for annotating the output
+class ConversationPromptAnswer(ConversationPrompt):
+    ''' generate the answer by following the instruction '''
+    def __init__(self):
+        super().__init__()
+        self.system = (
+            "You are a helpful assistant. " +
+            "Your responsibility is to follow the user's instructions and output the answer."
+        )
+        # don't need to filter the keywords when annotating the output
+        self.blacklist = [
+        ]
         
+        self.requirement_prompt = (
+            "1. Conclude your final answer without reasoning.\n" +
+            "2. Try your best to answer the instruction; if it is impossible, generate 'None'.\n"
+        )
+        self.query_prompt = (
+            "### Input:\n" + 
+            "{input}\n\n" +
+            "### Instruction:\n" +
+            "{instruction}\n\n" +
+            "### Requirements:\n" +
+            self.requirement_prompt + "\n" +
+            "### Output:\n"
+        )
+
+    def extract_content(self, content:str):
+        # Remove the "None" at the end
+        # content = re.sub(r"(None\.|None|none\.|none)", "", content) 
+        content = re.sub(r"(None\.?|none\.?)+$", "", content)
+        content = content.strip()
+         
+        return content
         
+
+
 if __name__ == "__main__":
     # prompt = ConversationPromptAttribute()
     # print(prompt.att_prompt.format_map({"input": "This is a test input."}))
@@ -134,15 +172,24 @@ if __name__ == "__main__":
     
     test_content = "Identify the total number of characters in the input.\n\n" + \
         "Task 2:\n" + \
-        "Determine the number of uppercase letters in the input.\n\n" + \
+        "Determine the number of uppercase letters (such as 'None') in the input.\n\n" + \
         "Task 3:\n" + \
         "Count the number of lowercase letters in the input.\n\n" + \
         "Task 17:\n" + \
-        "Count the number of characters that are neither vowels nor consonants (i.e., digits and special characters) in the input.\n\n" + \
+        "Count the number of characters that are neither vowels nor consonants (i.e., digits and special characters) in the input, e.g., none.\n\n" + \
         "None."
+    # test_content = "None."
     
     # prompt = ConversationPromptTask()
     prompt = ConversationPromptTask_2()
+    print(prompt.extract_content(test_content))
+    
+    test_content = "Person A: Well that's sad. It might've been funny if it was fake.\n" + \
+                    "Person B: Oh yes, because nothing brings joy to the world like a good fake tragedy. Maybe next time we can all gather around and laugh at a staged car accident.\n" + \
+                    "Person B: Oh, my apologies. I thought you were suggesting we should all be entertained by the misfortunes of others. Silly me.\n" + \
+                    "None."
+                    
+    prompt = ConversationPromptAnswer()
     print(prompt.extract_content(test_content))
     
 
