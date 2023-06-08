@@ -86,9 +86,11 @@ def main():
     # annotate the instructions 
     target_datas, skip_num, complete_num = [], 0, 0
     # TODO: only test the first 100 instances
-    id2instances = dict(random.sample(list(id2instances.items())[10:], 40))
+    # id2instances = dict(random.sample(list(id2instances.items())[10:], 40))
     for input_id, input_ins in tqdm(id2instances.items(), total=len(id2instances)):
-        input, instructions, cost = input_ins["input"], input_ins["instructions"], input_ins["cost"]
+        input, instructions, all_cost = input_ins["input"], input_ins["instructions"], input_ins["cost"]
+        # delete identical instructions to save money
+        instructions = list(set(instructions))
         annotated_instances = []
         for idx, instruction in enumerate(instructions):
             input_value = {"input": input, "instruction": instruction}
@@ -102,7 +104,8 @@ def main():
             annotated_instance.pop("input")
             annotated_instances.append(annotated_instance)
             complete_num += 1
-        target_data = {"id": input_id, "input": input, "instances": annotated_instances, "cost": cost}
+            all_cost += cost
+        target_data = {"id": input_id, "input": input, "instances": annotated_instances, "cost": all_cost}
         target_datas.append(target_data)
             
     # write the output files
