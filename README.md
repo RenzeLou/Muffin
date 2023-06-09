@@ -6,3 +6,6 @@ run `python generate_answers.py` to annotate the answers.
 
 the prompt template can be found in `prompt_templates.py`
 the querying procedure can be found in `chat_completion.py` (shared by both `generate_attributes.py`, `generate_instructions.py` and `generate_answers.py`)
+
+
+use `python filter/filtering.py` to filter the data. The resulting data will be saved as f`filtered_{instance_num}.json`

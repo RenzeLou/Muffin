@@ -48,11 +48,6 @@ def main():
     if unparsed:
         raise ValueError(unparsed)
     
-    args.save_file = os.path.join(args.path, args.save_file)
-
-    if os.path.exists(args.save_file) and not args.overwrite:
-        raise ValueError("Save file {} already exists, set --overwrite to overwrite it.".format(args.save_file))
-    
     # read all the input files
     all_inputs = []
     data_files = args.data_files.split(",")
@@ -112,11 +107,6 @@ def main():
         no_answer_del_num_list.append(no_answer_inst_del_num)
         input["instances"] = all_instructions_del
         all_inputs_del_2.append(input)
-        
-    # save the filtered data
-    print("Save the filtered data at {}.".format(args.save_file))
-    with open(args.save_file, "w") as f:
-        json.dump(all_inputs_del_2, f, indent=2)
     
     print("Delete num:")
     print("==> identical instructions: {}, avg del num for each input: {}".format(sum(same_inst_del_num_list), sum(same_inst_del_num_list)/len(same_inst_del_num_list) if len(same_inst_del_num_list) > 0 else 0))
@@ -133,6 +123,17 @@ def main():
     print("==> all instances: {}, avg num for each input: {}".format(sum(instances_num_list), sum(instances_num_list)/len(instances_num_list) if len(instances_num_list) > 0 else 0))
 
 
+    # name the save file as the instance num
+    args.save_file = args.save_file.split(".")[0] + f"_{sum(instances_num_list)}.json"
+    args.save_file = os.path.join(args.path, args.save_file)
+    if os.path.exists(args.save_file) and not args.overwrite:
+        raise ValueError("Save file {} already exists, set --overwrite to overwrite it.".format(args.save_file))
+    
+    # save the filtered data
+    print("Save the filtered data at {}.".format(args.save_file))
+    with open(args.save_file, "w") as f:
+        json.dump(all_inputs_del_2, f, indent=2)
+    
 if __name__ == "__main__":    
     main()
     
