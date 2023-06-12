@@ -47,6 +47,7 @@ def main():
                         default='add_answers.json')
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--overwrite", action="store_true", help="overwrite the save file if it exists.")
+    parser.add_argument("--instance_num", type=int, default=None, help="number of instances (input) to annotate.")
 
     args, unparsed = parser.parse_known_args()
     if unparsed:
@@ -87,7 +88,7 @@ def main():
     # annotate the instructions 
     target_datas, skip_num, complete_num = [], 0, 0
     # TODO: only test the first 100 instances
-    # id2instances = dict(random.sample(list(id2instances.items())[10:], 40))
+    id2instances = dict(random.sample(list(id2instances.items()), min(args.instance_num, len(id2instances)))) if args.instance_num is not None else id2instances
     for input_id, input_ins in tqdm(id2instances.items(), total=len(id2instances)):
         input, instructions, all_cost = input_ins["input"], input_ins["instructions"], input_ins["cost"]
         # delete identical instructions to save money

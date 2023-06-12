@@ -16,7 +16,7 @@ from tenacity import (
     wait_random_exponential,
 )  # for exponential backoff
 
-from prompt_templates import ConversationPrompt, ConversationPromptTask, ConversationPromptTask_2
+from prompt_templates import ConversationPrompt, ConversationPromptTask, ConversationPromptTask_2, ConversationPromptTask_3, ConversationPromptTask_4
 from chat_completion import openai_chat_completion
 
 
@@ -25,7 +25,7 @@ def default_stop() -> List[str]:
 
 @dataclasses.dataclass
 class OpenAIDecodingArguments(object):
-    max_tokens: int = 3800
+    max_tokens: int = 3200
     temperature: float = 0.2
     top_p: float = 0.99
     n: int = 1
@@ -53,6 +53,8 @@ def main():
                         default=1, help="choice value indicating different templates.")
     parser.add_argument("--overwrite", action="store_true", help="overwrite the save file if it exists.")
     parser.add_argument("--instance_num", type=int, default=None, help="number of instances (input) to annotate.")
+    parser.add_argument("--demo_instructions", type=str, default="/scratch/rml6079/project/Tk-Instruct/data/valid_x/demon_instructions.json",
+                        help="path to the demonstration instructions.")
 
     args, unparsed = parser.parse_known_args()
     if unparsed:
@@ -70,8 +72,13 @@ def main():
         template = ConversationPromptTask() # following hints
     elif args.template == 2:
         template = ConversationPromptTask_2() # shifting attributes
+    elif args.template == 3:
+        template = ConversationPromptTask_3() # following hints, w/ 3-shot demonstrations
+    elif args.template == 4:
+        template = ConversationPromptTask_4() # shifting attributes, w/ 3-shot demonstrations
     else:
-        raise ValueError("template value must be 1 or 2.")
+        raise ValueError("template value must be 1, 2, 3, or 4.")
+    
     decoding_args = OpenAIDecodingArguments()
 
     # read the input files
@@ -81,14 +88,21 @@ def main():
     else:
         raise ValueError("Input file {} does not exist.".format(args.data_file))
     
+    # read the demonstration instructions
+    with open(args.demo_instructions, "r") as f:
+        demo_instances = json.load(f)
+        
     all_instances = []
     # randomly sample subset of instances (when testing)
     instances = random.sample(instances, min(args.instance_num, len(instances))) if args.instance_num is not None else instances
     for ins in instances:
         id, x, atts, cost = ins["id"], ins["input"], ins["attributes"], ins["cost"]  # ins["content"]   
         for idx, att in enumerate(atts):
+            # random select 3-shot demonstrations
+            demos = random.sample(demo_instances, 3)
             # construct instance into a new dict that can be fiiled into the template
-            all_instances.append({"id": id + f"-hint{idx}", "input": x, "hint": att, "cost": cost})
+            all_instances.append({"id": id + f"-hint{idx}", "input": x, "hint": att, 
+                                  "cost": cost, "example_1": demos[0], "example_2": demos[1], "example_3": demos[2]})
             
     outputs, skip_num = [], 0
     for i, instance in tqdm(enumerate(all_instances), total=len(all_instances)):
