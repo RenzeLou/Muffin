@@ -54,6 +54,7 @@ def main():
 
     openai.api_key = os.getenv("OPENAI_API_KEY") if args.api_key is None else args.api_key
     args.save_file = os.path.join(args.path, args.save_file)
+    random.seed(args.seed)
     
     if os.path.exists(args.save_file) and not args.overwrite:
         raise ValueError("Save file {} already exists, set --overwrite to overwrite it.".format(args.save_file))
