@@ -3,6 +3,7 @@ import argparse
 import copy
 import json
 import os
+import random
 import openai
 import dataclasses
 import logging
@@ -49,6 +50,7 @@ def main():
                         default='attributes.json')
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--overwrite", action="store_true", help="overwrite the save file if it exists.")
+    parser.add_argument("--instance_num", type=int, default=None, help="number of instances (input) to annotate.")
 
     args, unparsed = parser.parse_known_args()
     if unparsed:
@@ -57,6 +59,7 @@ def main():
     openai.api_key = os.getenv("OPENAI_API_KEY") if args.api_key is None else args.api_key
     args.data_file = os.path.join(args.path, args.data_file)
     args.save_file = os.path.join(args.path, args.save_file)
+    random.seed(args.seed)
     
     if os.path.exists(args.save_file) and not args.overwrite:
         raise ValueError("Save file {} already exists, set --overwrite to overwrite it.".format(args.save_file))
@@ -76,6 +79,8 @@ def main():
     #     {"id": "2", "input": "It's a very nice kit, it came with all the accessories, BUT my waterproof case was broken, the thing that closes it was broken so I can't close the case and now the case is useless. And I bought this kit just because of the waterproof case.... The rest was fine as announced."},
     #     {"id": "3", "input": "['U', '6923', 'y', 'm', 'v', 'M', 'Y', '87667', 'E', '6059', 'p']"}]
     outputs, skip_num = [], 0
+    # randomly sample subset of instances (when testing)
+    instances = random.sample(instances, min(args.instance_num, len(instances))) if args.instance_num is not None else instances
     for i, instance in tqdm(enumerate(instances), total=len(instances)):
         content, cost = openai_chat_completion(instance, template, decoding_args)
         if content is None:

@@ -9,3 +9,12 @@ the querying procedure can be found in `chat_completion.py` (shared by both `gen
 
 
 use `python filter/filtering.py` to filter the data. The resulting data will be saved as f`filtered_{instance_num}.json`
+
+TODO:
+
+```bash
+python generate_instructions.py --path ./data/SuperNI_v2 --data_file add_attributes.json --save_file add_generated_instructions_2.json --template 2 --instance_num 200
+
+python generate_instructions.py --path ./data/SuperNI_v2 --data_file add_attributes.json --save_file add_generated_instructions_1.json --template 1 --instance_num 200
+python generate_answers.py --path ./data/SuperNI_v2 --data_files add_generated_instructions_1.json,add_generated_instructions_2.json --save_file add_answers_full.json
+```

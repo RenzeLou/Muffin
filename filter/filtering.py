@@ -3,6 +3,7 @@ Use this script to conduct a simple filtering on generated instruction data
 Two rules:
 (1). delete the same instructions for each input
 (2). delete those no-answer instructions (invalid instructions)
+(3). [optional] delete those input with only a few instructions (threshold); the threshold is set empirically (according to the data distribution)
 
 Also print the statistics of the data after filtering.
 '''
@@ -40,7 +41,7 @@ def main():
     parser.add_argument("--save_file", type=str,
                         default='filtered.json')
     parser.add_argument("--seed", type=int, default=42)
-    # TODO: I don't know if these meanningless responses are also helpful for tuning the model (alighment)
+    # TODO: I don't know if these meanningless responses are also helpful for tuning the model (alignments)
     parser.add_argument("--del_no_answer", action="store_true", help="whether to delete ChatGPT's no-answer response, such as 'Sorry, I cannot create a quiz as I am a language model AI...'.")
     parser.add_argument("--overwrite", action="store_true", help="overwrite the save file if it exists.")
 
@@ -107,6 +108,8 @@ def main():
         no_answer_del_num_list.append(no_answer_inst_del_num)
         input["instances"] = all_instructions_del
         all_inputs_del_2.append(input)
+    
+    # TODO: delete those input with only a few instructions (threshold); but I am not sure if this is helpful.
     
     print("Delete num:")
     print("==> identical instructions: {}, avg del num for each input: {}".format(sum(same_inst_del_num_list), sum(same_inst_del_num_list)/len(same_inst_del_num_list) if len(same_inst_del_num_list) > 0 else 0))

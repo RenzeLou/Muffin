@@ -23,10 +23,10 @@ def FindAllSuffix(task_path,sufix="json"):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--training_data_path",type=str,default='../Tk-Instruct/data/tasks/def_segmentation')
-    parser.add_argument("--split_path",type=str,default="../Tk-Instruct/data/splits/default")
-    parser.add_argument("--save_path",type=str,default="./data/SuperNI")
-    parser.add_argument("--num_dataset",type=int,default=100)
+    parser.add_argument("--training_data_path",type=str,default='../Tk-Instruct/data/tasks')  # ../Tk-Instruct/data/tasks/def_segmentation
+    parser.add_argument("--split_file",type=str,default="../Tk-Instruct/data/valid_x/train_tasks_valid_input.txt")
+    parser.add_argument("--save_path",type=str,default="./data/SuperNI_v2")
+    parser.add_argument("--num_dataset",type=int,default=None)
     parser.add_argument("--num_instance",type=int,default=5)
     parser.add_argument("--seed",type=int,default=42)
 
@@ -35,7 +35,7 @@ def main():
         raise ValueError(unparsed)
     
     training_data_path = args.training_data_path
-    split_path = args.split_path
+    split_file = args.split_file
     save_path = args.save_path
     seed = args.seed
     
@@ -48,11 +48,11 @@ def main():
     train_tk_name = []
     
     print("==> read all the training tasks...")
-    with open(split_path+"/train_tasks.txt","r") as sp:
+    with open(split_file,"r") as sp:
         all_tr_tasks = sp.readlines()
         all_tr_tasks = list(map(del_ent,all_tr_tasks))
         # random select some tasks
-        all_tr_tasks = random.sample(all_tr_tasks,min(args.num_dataset,len(all_tr_tasks)))
+        all_tr_tasks = random.sample(all_tr_tasks,min(args.num_dataset,len(all_tr_tasks))) if args.num_dataset is not None else all_tr_tasks
         all_tr_tasks_key = dict([(t,1) for t in all_tr_tasks])
         
     all_tasks_pt = FindAllSuffix(training_data_path,"json")
@@ -78,7 +78,8 @@ def main():
                             }
                     resulting_data.append(new_ins)
     
-    assert train_num == args.num_dataset, f"training dataset num {train_num} shoud be equal to arg {args.num_dataset}"
+    if args.num_dataset is not None:
+        assert train_num == args.num_dataset, f"training dataset num {train_num} shoud be equal to arg {args.num_dataset}"
     
     # save data
     os.makedirs(save_path, exist_ok=True)

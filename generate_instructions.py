@@ -3,6 +3,7 @@ import argparse
 import copy
 import json
 import os
+import random
 import openai
 import dataclasses
 import logging
@@ -51,6 +52,7 @@ def main():
     parser.add_argument("--template", type=int, 
                         default=1, help="choice value indicating different templates.")
     parser.add_argument("--overwrite", action="store_true", help="overwrite the save file if it exists.")
+    parser.add_argument("--instance_num", type=int, default=None, help="number of instances (input) to annotate.")
 
     args, unparsed = parser.parse_known_args()
     if unparsed:
@@ -59,6 +61,7 @@ def main():
     openai.api_key = os.getenv("OPENAI_API_KEY") if args.api_key is None else args.api_key
     args.data_file = os.path.join(args.path, args.data_file)
     args.save_file = os.path.join(args.path, args.save_file)
+    random.seed(args.seed)
     
     if os.path.exists(args.save_file) and not args.overwrite:
         raise ValueError("Save file {} already exists, set --overwrite to overwrite it.".format(args.save_file))
@@ -79,7 +82,8 @@ def main():
         raise ValueError("Input file {} does not exist.".format(args.data_file))
     
     all_instances = []
-    instances = instances[2:]  ## TODO: remove this line (used for quck testing)
+    # randomly sample subset of instances (when testing)
+    instances = random.sample(instances, min(args.instance_num, len(instances))) if args.instance_num is not None else instances
     for ins in instances:
         id, x, atts, cost = ins["id"], ins["input"], ins["attributes"], ins["cost"]  # ins["content"]   
         for idx, att in enumerate(atts):

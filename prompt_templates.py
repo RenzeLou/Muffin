@@ -79,6 +79,8 @@ class ConversationPromptTask(ConversationPrompt):
             "3. Each task must be indivisible (one task, one intention).\n" +
             "4. Avoid tasks requiring additional context, i.e., tasks must be easily solved/answered using only the input.\n" +
             "5. Please prioritize your most confident predictions.\n"
+            "6. You should explicitly mention any necessary output constraints, such as answer options or length limitations.\n" +
+            "7. But do not disclose the final answer!\n"
         )
         self.query_prompt = (
             "### Input:\n" + 
@@ -104,6 +106,8 @@ class ConversationPromptTask_2(ConversationPrompt):
             "3. Each task must be indivisible (one task, one intention).\n" +
             "4. Avoid tasks requiring additional context, i.e., tasks must be easily solved/answered using only the input.\n" +
             "5. Please prioritize your most confident predictions.\n"
+            "6. You should explicitly mention any necessary output constraints, such as answer options or length limitations.\n" +
+            "7. But do not disclose the final answer!\n"
         )
         self.query_prompt = (
             "### Input:\n" + 
@@ -180,16 +184,19 @@ if __name__ == "__main__":
         "None."
     # test_content = "None."
     
-    # prompt = ConversationPromptTask()
-    prompt = ConversationPromptTask_2()
-    print(prompt.extract_content(test_content))
+    prompt = ConversationPromptTask()
+    # prompt = ConversationPromptTask_2()
+    # print(prompt.extract_content(test_content))
     
-    test_content = "Person A: Well that's sad. It might've been funny if it was fake.\n" + \
-                    "Person B: Oh yes, because nothing brings joy to the world like a good fake tragedy. Maybe next time we can all gather around and laugh at a staged car accident.\n" + \
-                    "Person B: Oh, my apologies. I thought you were suggesting we should all be entertained by the misfortunes of others. Silly me.\n" + \
-                    "None."
+    # test_content = "Person A: Well that's sad. It might've been funny if it was fake.\n" + \
+    #                 "Person B: Oh yes, because nothing brings joy to the world like a good fake tragedy. Maybe next time we can all gather around and laugh at a staged car accident.\n" + \
+    #                 "Person B: Oh, my apologies. I thought you were suggesting we should all be entertained by the misfortunes of others. Silly me.\n" + \
+    #                 "None."
                     
-    prompt = ConversationPromptAnswer()
-    print(prompt.extract_content(test_content))
+    # prompt = ConversationPromptAnswer()
+    # print(prompt.extract_content(test_content))
+    
+    test_input = {"input": "This is a test input.", "hint": "This is a test hint."}
+    print(prompt.query_prompt.format_map(test_input))
     
 
