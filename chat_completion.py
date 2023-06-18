@@ -19,6 +19,7 @@ from tenacity import (
 from prompt_templates import ConversationPromptAttribute,ConversationPrompt
 # from generate_attributes import OpenAIDecodingArguments
 
+# TODO: the below function only support 0301, update it for gpt-3.5-turbo-0613
 def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0301"):
     """
     Returns the number of tokens used by a list of messages.
@@ -89,7 +90,7 @@ def openai_chat_completion(
     input_dic: dict,
     template: ConversationPrompt,
     decoding_args,
-    model_name="gpt-3.5-turbo",
+    model_name="gpt-3.5-turbo-0613",  # TODO: return back to gpt-3.5-turbo in the future
     **decoding_kwargs,
 ):
     '''

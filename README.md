@@ -2,7 +2,8 @@
 
 run `python generate_attributes.py --api_key xxx` to generate the attributes.
 run `python generate_instructions.py --api_key xxx` to generate the instructions based on the attributes.
-run `python generate_answers.py` to annotate the answers.
+run `python generate_constraints.py` to add additional constraints to the instructions.
+run `python generate_answers.py` to annotate the answers based on the (input, instruction, constraint).
 
 the prompt template can be found in `prompt_templates.py`
 the querying procedure can be found in `chat_completion.py` (shared by both `generate_attributes.py`, `generate_instructions.py` and `generate_answers.py`)
@@ -13,8 +14,5 @@ use `python filter/filtering.py` to filter the data. The resulting data will be 
 TODO:
 
 ```bash
-python generate_instructions.py --path ./data/SuperNI_v2 --data_file add_attributes.json --save_file add_generated_instructions_2.json --template 2 --instance_num 200
-
-python generate_instructions.py --path ./data/SuperNI_v2 --data_file add_attributes.json --save_file add_generated_instructions_1.json --template 1 --instance_num 200
-python generate_answers.py --path ./data/SuperNI_v2 --data_files add_generated_instructions_1.json,add_generated_instructions_2.json --save_file add_answers_full.json
+python generate_answers.py --path ./data/SuperNI_v2 --data_files add_constraints.json --save_file add_answers_w_constraints.json --constraint_added
 ```

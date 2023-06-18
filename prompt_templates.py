@@ -227,7 +227,53 @@ class ConversationPromptAnswer(ConversationPrompt):
          
         return content
         
-
+# used for adding output constraints
+class ConversationPromptConstraint(ConversationPrompt):
+    ''' summarize an output constraint from the instruction '''
+    def __init__(self):
+        super().__init__()
+        self.system = (
+            "You are a helpful assistant. "
+        )
+        
+        self.demonstrations_num = 8
+        self.query_prompt = (
+            "Read and summarize the output constraints from the given instruction. Generate 'None', if there are no clear constraints required by the instruction.\n\n" + 
+            "### Example 1:\n" +
+            "Instruction: {instruction_1}\n" +
+            "Constraints: {constraint_1}\n\n" +
+            "### Example 2:\n" +
+            "Instruction: {instruction_2}\n" +
+            "Constraints: {constraint_2}\n\n" +
+            "### Example 3:\n" +
+            "Instruction: {instruction_3}\n" +
+            "Constraints: {constraint_3}\n\n" +
+            "### Example 4:\n" +
+            "Instruction: {instruction_4}\n" +
+            "Constraints: {constraint_4}\n\n" +
+            "### Example 5:\n" +
+            "Instruction: {instruction_5}\n" +
+            "Constraints: {constraint_5}\n\n" +
+            "### Example 6:\n" +
+            "Instruction: {instruction_6}\n" +
+            "Constraints: {constraint_6}\n\n" +
+            "### Example 7:\n" +
+            "Instruction: {instruction_7}\n" +
+            "Constraints: {constraint_7}\n\n" +
+            "### Example 8:\n" +
+            "Instruction: {instruction_8}\n" +
+            "Constraints: {constraint_8}\n\n" +
+            "### Example 9:\n" +
+            "Instruction: {target_instruction}\n" +
+            "Constraints: "
+        )   
+        
+    
+    def extract_content(self, content:str):
+        # just simply return back the content
+        content = content.strip()
+         
+        return content
 
 if __name__ == "__main__":
     # prompt = ConversationPromptAttribute()
@@ -269,8 +315,20 @@ if __name__ == "__main__":
     # test_input = {"input": "This is a test input.", "hint": "This is a test hint."}
     # print(prompt.query_prompt.format_map(test_input))
     
-    prompt = ConversationPromptTask_4()
-    test_input = {"input": "This is a test input.", "hint": "This is a test hint.", "example_1": "This is a test example 1.", "example_2": "This is a test example 2.", "example_3": "This is a test example 3."}
+    # prompt = ConversationPromptTask_4()
+    # test_input = {"input": "This is a test input.", "hint": "This is a test hint.", "example_1": "This is a test example 1.", "example_2": "This is a test example 2.", "example_3": "This is a test example 3."}
+    # print(prompt.query_prompt.format_map(test_input))
+    
+    prompt = ConversationPromptConstraint()
+    test_input = {"instruction_1": "This is a test instruction 1.", "constraint_1": "This is a test constraint 1.",
+                  "instruction_2": "This is a test instruction 2.", "constraint_2": "This is a test constraint 2.",
+                  "instruction_3": "This is a test instruction 3.", "constraint_3": "This is a test constraint 3.",
+                  "instruction_4": "This is a test instruction 4.", "constraint_4": "This is a test constraint 4.",
+                  "instruction_5": "This is a test instruction 5.", "constraint_5": "This is a test constraint 5.",
+                  "instruction_6": "This is a test instruction 6.", "constraint_6": "This is a test constraint 6.",
+                  "instruction_7": "This is a test instruction 7.", "constraint_7": "This is a test constraint 7.",
+                  "instruction_8": "This is a test instruction 8.", "constraint_8": "This is a test constraint 8.",
+                  "target_instruction": "This is a test target instruction."}
     print(prompt.query_prompt.format_map(test_input))
     
 

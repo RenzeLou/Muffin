@@ -4,7 +4,6 @@ import copy
 import json
 import os
 import random
-import string
 import openai
 import dataclasses
 import logging
@@ -17,7 +16,7 @@ from tenacity import (
     wait_random_exponential,
 )  # for exponential backoff
 
-from prompt_templates import ConversationPrompt, ConversationPromptAnswer, ConversationPromptTask, ConversationPromptTask_2
+from prompt_templates import ConversationPromptConstraint
 from chat_completion import openai_chat_completion
 
 
@@ -28,7 +27,7 @@ def default_stop() -> List[str]:
 class OpenAIDecodingArguments(object):
     max_tokens: int = 1024
     temperature: float = 0.1
-    top_p: float = 0.1
+    top_p: float = 0.99
     n: int = 1
     stream: bool = False
     # stop: Optional[List[str]] = dataclasses.field(default_factory=default_stop)
@@ -55,49 +54,16 @@ def filter_same_instructions(instructions: List[str]):
     return instructions
 
 
-def process_input_files(args):
-    ''' process the input files and group them by id '''
-    if not args.constraint_added:
-        # read all the input files
-        all_instances = []
-        data_files = args.data_files.split(",")
-        for data_file in data_files:
-            data_file = os.path.join(args.path, data_file)
-            if os.path.exists(data_file):
-                with open(data_file, "r") as f:
-                    instances = json.load(f)
-                    all_instances.extend(instances)
-            else:
-                raise ValueError("Input file {} does not exist.".format(data_file))
+def get_shuffled_demons(all_demons:list):
+        # shuffle the demons
+        random.shuffle(all_demons)
+        demons_dict = {}
+        for id, demon in enumerate(all_demons):
+            demon_instruct, demon_constraint = demon["instruction"], demon["constraints"]
+            demons_dict["instruction_{}".format(id+1)] = demon_instruct
+            demons_dict["constraint_{}".format(id+1)] = demon_constraint
         
-        # group instances by id
-        id2instances = {}  
-        for instance in all_instances:
-            ins_id = instance["id"].rsplit("-", 1)[0]
-            if id2instances.get(ins_id,None) is None:
-                id2instances[ins_id] = {"input": instance["input"], "instructions": instance["instructions"], "cost": instance["cost"]}
-            else:
-                id2instances[ins_id]["instructions"].extend(instance["instructions"])
-                id2instances[ins_id]["cost"] += instance["cost"]
-    
-    else:
-        # read the input file (adter adding constraints, the input file has already been formulated as id2instances)
-        with open(os.path.join(args.path, args.data_files), "r") as f:
-            ori_id2instances = json.load(f)
-        id2instances = {}
-        for ins_id, ins in ori_id2instances.items():
-            instructions, constraints = ins["instructions"], ins["constraints"]
-            assert len(instructions) == len(constraints), "The number of instructions and constraints should be the same, but got {} and {}.".format(len(instructions), len(constraints))
-            new_instructions = []
-            for instruction, constraint in zip(instructions, constraints):
-                # combine the instruction and constraint together
-                instruction += "." if instruction[-1] not in string.punctuation else ""
-                constraint += "." if constraint[-1] not in string.punctuation else ""
-                new_instruction = f"{instruction} Output constraint: {constraint}"
-                new_instructions.append(new_instruction)
-            id2instances[ins_id] = {"input": ins["input"], "instructions": new_instructions, "cost": ins["cost"]}
-            
-    return id2instances
+        return demons_dict
 
 
 def main():
@@ -109,11 +75,12 @@ def main():
     parser.add_argument("--data_files", type=str,
                         default='add_generated_instructions_1.json,add_generated_instructions_2.json', help="one or more input files, separated by comma.")
     parser.add_argument("--save_file", type=str,
-                        default='add_answers.json')
+                        default='add_constraints.json')
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--overwrite", action="store_true", help="overwrite the save file if it exists.")
     parser.add_argument("--instance_num", type=int, default=None, help="number of instances (input) to annotate.")
-    parser.add_argument("--constraint_added", action="store_true", help="whether the constraints have been added to the input file.")
+    parser.add_argument("--demo_instructions", type=str, default="/scratch/rml6079/project/Tk-Instruct/data/valid_x/constraints_few_manual.json",
+                        help="path to the demonstration instructions w/ constraints.")
 
     args, unparsed = parser.parse_known_args()
     if unparsed:
@@ -126,39 +93,72 @@ def main():
     if os.path.exists(args.save_file) and not args.overwrite:
         raise ValueError("Save file {} already exists, set --overwrite to overwrite it.".format(args.save_file))
     
-    template = ConversationPromptAnswer()
+    template = ConversationPromptConstraint()
     decoding_args = OpenAIDecodingArguments()
+    
+    # load the demonstration instructions
+    with open(args.demo_instructions, "r") as f:
+        all_demons = json.load(f)
+        all_demons = all_demons[:template.demonstrations_num]  # 8-shot demonstrations 
 
-    id2instances = process_input_files(args) # {"SuperNI-task497-d1bb2eb02d7749849340515edb593540": {"input":..., "instructions":[...], "cost": ...}}
+    # demons_dict = get_shuffled_demons(all_demons)
+    # print("demonstrations: {}".format(demons_dict))
+
+    # read all the input files
+    all_instances = []
+    data_files = args.data_files.split(",")
+    for data_file in data_files:
+        data_file = os.path.join(args.path, data_file)
+        if os.path.exists(data_file):
+            with open(data_file, "r") as f:
+                instances = json.load(f)
+                all_instances.extend(instances)
+        else:
+            raise ValueError("Input file {} does not exist.".format(data_file))
+    
+    # group instances by id
+    id2instances = {}  # {"SuperNI-task497-d1bb2eb02d7749849340515edb593540": {"input":..., "instructions":[...]}}
+    for instance in all_instances:
+        ins_id = instance["id"].rsplit("-", 1)[0]
+        if id2instances.get(ins_id,None) is None:
+            id2instances[ins_id] = {"input": instance["input"], "instructions": instance["instructions"], "cost": instance["cost"]}
+        else:
+            id2instances[ins_id]["instructions"].extend(instance["instructions"])
+            id2instances[ins_id]["cost"] += instance["cost"]
     
     # annotate the instructions 
-    target_datas, skip_num, complete_num = [], 0, 0
+    skip_num, complete_num = 0, 0
+    new_id2instances = {}
     id2instances = dict(random.sample(list(id2instances.items()), min(args.instance_num, len(id2instances)))) if args.instance_num is not None else id2instances
     for input_id, input_ins in tqdm(id2instances.items(), total=len(id2instances)):
-        input, instructions, all_cost = input_ins["input"], input_ins["instructions"], input_ins["cost"]
+        instructions, all_cost = input_ins["instructions"], input_ins["cost"]
         # delete identical instructions to save money
         instructions = filter_same_instructions(instructions)
-        annotated_instances = []
+        new_instructions, constraints = [], []  # instructions where the constraints are added
+        new_input_ins = copy.deepcopy(input_ins)  # all remain the same except for the `instructions`.
         for idx, instruction in enumerate(instructions):
-            input_value = {"input": input, "instruction": instruction}
+            demons_dict = get_shuffled_demons(all_demons)  # since the response of LLMs depends on the order of the demons, shuffle it each time to avoid bias
+            input_value = copy.deepcopy(demons_dict)
+            input_value["target_instruction"] = instruction
             content, cost = openai_chat_completion(input_value, template, decoding_args)
             if content is None:
                 skip_num += 1
                 continue
-            input_value["output"] = content
-            input_value["cost"] = cost
-            annotated_instance = copy.deepcopy(input_value)
-            annotated_instance.pop("input")
-            annotated_instances.append(annotated_instance)
+            # new_instruction = f"{instruction} Output constraint: {content}"
+            new_instruction = instruction
+            new_instructions.append(new_instruction)
+            constraints.append(content)
             complete_num += 1
             all_cost += cost
-        target_data = {"id": input_id, "input": input, "instances": annotated_instances, "cost": all_cost}
-        target_datas.append(target_data)
+        new_input_ins["instructions"] = new_instructions
+        new_input_ins["constraints"] = constraints
+        new_input_ins["cost"] = all_cost
+        new_id2instances[input_id] = new_input_ins
             
     # write the output files
     save_file = args.save_file
     with open(save_file, "w") as f:
-        json.dump(target_datas, f, indent=2)
+        json.dump(new_id2instances, f, indent=2)
     
     print("==> saved to {}".format(save_file))
     print("==> skip: {} ; complete: {}".format(skip_num, complete_num))

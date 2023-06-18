@@ -30,12 +30,9 @@ class OpenAIDecodingArguments(object):
     top_p: float = 0.99
     n: int = 1
     stream: bool = False
-    stop: Optional[List[str]] = dataclasses.field(default_factory=default_stop)
+    # stop: Optional[List[str]] = dataclasses.field(default_factory=default_stop)
     presence_penalty: float = 1.99
     frequency_penalty: float = 0.0
-    # suffix: Optional[str] = None
-    # logit_bias: Optional[dict] = None
-    # echo: bool = False
 
 
 def main():
