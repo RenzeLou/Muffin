@@ -14,5 +14,5 @@ use `python filter/filtering.py` to filter the data. The resulting data will be 
 TODO:
 
 ```bash
-python generate_answers.py --path ./data/SuperNI_v2 --data_files add_constraints.json --save_file add_answers_w_constraints.json --constraint_added
+python generate_answers.py --path ./data/SuperNI_v2 --data_files add_constraints_w_input_info.json --save_file add_answers_w_constraints_w_input_info.json --constraint_added
 ```

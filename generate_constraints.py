@@ -111,9 +111,6 @@ def main():
         all_demons = json.load(f)
         all_demons = all_demons[:template.demonstrations_num]  # 8-shot demonstrations 
 
-    # demons_dict = get_shuffled_demons(all_demons)
-    # print("demonstrations: {}".format(demons_dict))
-
     # read all the input files
     all_instances = []
     data_files = args.data_files.split(",")
