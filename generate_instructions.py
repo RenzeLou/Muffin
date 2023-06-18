@@ -88,6 +88,9 @@ def main():
     # read the demonstration instructions
     with open(args.demo_instructions, "r") as f:
         demo_instances = json.load(f)
+        if isinstance(demo_instances[0], list):
+            demo_instances = [item[0] for item in demo_instances]
+        assert isinstance(demo_instances[0], str)
         
     all_instances = []
     # randomly sample subset of instances (when testing)

@@ -275,6 +275,60 @@ class ConversationPromptConstraint(ConversationPrompt):
          
         return content
 
+class ConversationPromptConstraint_2(ConversationPrompt):
+    ''' also add Input to the query prompt, since some of the constraints are coming from the input '''
+    def __init__(self):
+        super().__init__()
+        self.system = (
+            "You are a helpful assistant. "
+        )
+        
+        self.demonstrations_num = 8
+        self.query_prompt = (
+            "Read the given task instruction and input, and summarize output constraints for this task. Generate 'None', if there are no clear constraints required by this task.\n\n" + 
+            "### Example 1:\n" +
+            "- Instruction: {instruction_1}\n" +
+            "- Input: {input_1}\n" +
+            "- Constraints: {constraint_1}\n\n" +
+            "### Example 2:\n" +
+            "- Instruction: {instruction_2}\n" +
+            "- Input: {input_2}\n" +
+            "- Constraints: {constraint_2}\n\n" +
+            "### Example 3:\n" +
+            "- Instruction: {instruction_3}\n" +
+            "- Input: {input_3}\n" +
+            "- Constraints: {constraint_3}\n\n" +
+            "### Example 4:\n" +
+            "- Instruction: {instruction_4}\n" +
+            "- Input: {input_4}\n" +
+            "- Constraints: {constraint_4}\n\n" +
+            "### Example 5:\n" +
+            "- Instruction: {instruction_5}\n" +
+            "- Input: {input_5}\n" +
+            "- Constraints: {constraint_5}\n\n" +
+            "### Example 6:\n" +
+            "- Instruction: {instruction_6}\n" +
+            "- Input: {input_6}\n" +
+            "- Constraints: {constraint_6}\n\n" +
+            "### Example 7:\n" +
+            "- Instruction: {instruction_7}\n" +
+            "- Input: {input_7}\n" +
+            "- Constraints: {constraint_7}\n\n" +
+            "### Example 8:\n" +
+            "- Instruction: {instruction_8}\n" +
+            "- Input: {input_8}\n" +
+            "- Constraints: {constraint_8}\n\n" +
+            "### Example 9:\n" +
+            "- Instruction: {target_instruction}\n" +
+            "- Input: {target_input}\n" +
+            "- Constraints: "
+        )   
+        
+    def extract_content(self, content:str):
+        # just simply return back the content
+        content = content.strip()
+         
+        return content
 
 if __name__ == "__main__":
     # prompt = ConversationPromptAttribute()
@@ -310,9 +364,9 @@ if __name__ == "__main__":
     #                 "Person B: Oh, my apologies. I thought you were suggesting we should all be entertained by the misfortunes of others. Silly me.\n" + \
     #                 "None."
                     
-    prompt = ConversationPromptAnswer()
-    test_input = {"input": "This is a test input.", "instruction": "This is a test instruction."}
-    print(prompt.query_prompt.format_map(test_input))
+    # prompt = ConversationPromptAnswer()
+    # test_input = {"input": "This is a test input.", "instruction": "This is a test instruction."}
+    # print(prompt.query_prompt.format_map(test_input))
     # print(prompt.extract_content(test_content))
     
     # test_input = {"input": "This is a test input.", "hint": "This is a test hint."}
@@ -333,5 +387,17 @@ if __name__ == "__main__":
     #               "instruction_8": "This is a test instruction 8.", "constraint_8": "This is a test constraint 8.",
     #               "target_instruction": "This is a test target instruction."}
     # print(prompt.query_prompt.format_map(test_input))
+    
+    prompt = ConversationPromptConstraint_2()
+    test_input = {"instruction_1": "This is a test instruction 1.", "constraint_1": "This is a test constraint 1.", "input_1": "This is a test input 1.",
+                  "instruction_2": "This is a test instruction 2.", "constraint_2": "This is a test constraint 2.", "input_2": "This is a test input 2.",
+                  "instruction_3": "This is a test instruction 3.", "constraint_3": "This is a test constraint 3.", "input_3": "This is a test input 3.",
+                  "instruction_4": "This is a test instruction 4.", "constraint_4": "This is a test constraint 4.", "input_4": "This is a test input 4.",
+                  "instruction_5": "This is a test instruction 5.", "constraint_5": "This is a test constraint 5.", "input_5": "This is a test input 5.",
+                  "instruction_6": "This is a test instruction 6.", "constraint_6": "This is a test constraint 6.", "input_6": "This is a test input 6.",
+                  "instruction_7": "This is a test instruction 7.", "constraint_7": "This is a test constraint 7.", "input_7": "This is a test input 7.",
+                  "instruction_8": "This is a test instruction 8.", "constraint_8": "This is a test constraint 8.", "input_8": "This is a test input 8.",
+                  "target_instruction": "This is a test target instruction.", "target_input": "This is a test target input."}
+    print(prompt.query_prompt.format_map(test_input))
     
 

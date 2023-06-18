@@ -16,7 +16,7 @@ from tenacity import (
     wait_random_exponential,
 )  # for exponential backoff
 
-from prompt_templates import ConversationPromptConstraint
+from prompt_templates import ConversationPromptConstraint, ConversationPromptConstraint_2
 from chat_completion import openai_chat_completion
 
 
@@ -62,6 +62,8 @@ def get_shuffled_demons(all_demons:list):
             demon_instruct, demon_constraint = demon["instruction"], demon["constraints"]
             demons_dict["instruction_{}".format(id+1)] = demon_instruct
             demons_dict["constraint_{}".format(id+1)] = demon_constraint
+            if demon.get("input", None) is not None:
+                demons_dict["input_{}".format(id+1)] = demon["input"]
         
         return demons_dict
 
@@ -70,6 +72,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--api_key", type=str, 
                         default=None, help="not recommended; better to set env varaible.")
+    parser.add_argument("--choice", type=int, required=True, help="which prompt template to use: [0, 1]")
     parser.add_argument("--path", type=str, 
                         default='./data/dummy/', help='source file & target save path.')
     parser.add_argument("--data_files", type=str,
@@ -93,7 +96,14 @@ def main():
     if os.path.exists(args.save_file) and not args.overwrite:
         raise ValueError("Save file {} already exists, set --overwrite to overwrite it.".format(args.save_file))
     
-    template = ConversationPromptConstraint()
+    if args.choice == 0:
+        # given instruction, generate constraints
+        template = ConversationPromptConstraint()
+    elif args.choice == 1:
+        # given both instruction and input, generate constraints
+        template = ConversationPromptConstraint_2()
+    else:
+        raise ValueError("Choice must be 0 or 1.")
     decoding_args = OpenAIDecodingArguments()
     
     # load the demonstration instructions
@@ -131,7 +141,7 @@ def main():
     new_id2instances = {}
     id2instances = dict(random.sample(list(id2instances.items()), min(args.instance_num, len(id2instances)))) if args.instance_num is not None else id2instances
     for input_id, input_ins in tqdm(id2instances.items(), total=len(id2instances)):
-        instructions, all_cost = input_ins["instructions"], input_ins["cost"]
+        input, instructions, all_cost = input_ins["input"], input_ins["instructions"], input_ins["cost"]
         # delete identical instructions to save money
         instructions = filter_same_instructions(instructions)
         new_instructions, constraints = [], []  # instructions where the constraints are added
@@ -140,6 +150,7 @@ def main():
             demons_dict = get_shuffled_demons(all_demons)  # since the response of LLMs depends on the order of the demons, shuffle it each time to avoid bias
             input_value = copy.deepcopy(demons_dict)
             input_value["target_instruction"] = instruction
+            input_value["target_input"] = input
             content, cost = openai_chat_completion(input_value, template, decoding_args)
             if content is None:
                 skip_num += 1
