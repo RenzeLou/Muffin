@@ -39,6 +39,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--api_key", type=str, 
                         default=None, help="not recommended; better to set env varaible.")
+    parser.add_argument("--api_name", type=str, default="gpt-3.5-turbo", help="the name of the api model.")
     parser.add_argument("--path", type=str, 
                         default='./data/dummy/', help='source file & target save path.')
     parser.add_argument("--data_file", type=str,
@@ -79,7 +80,7 @@ def main():
     # randomly sample subset of instances (when testing)
     instances = random.sample(instances, min(args.instance_num, len(instances))) if args.instance_num is not None else instances
     for i, instance in tqdm(enumerate(instances), total=len(instances)):
-        content, cost = openai_chat_completion(instance, template, decoding_args)
+        content, cost = openai_chat_completion(instance, template, decoding_args, model_name=args.api_name)
         if content is None:
             skip_num += 1
             continue

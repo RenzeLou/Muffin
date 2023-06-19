@@ -104,6 +104,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--api_key", type=str, 
                         default=None, help="not recommended; better to set env varaible.")
+    parser.add_argument("--api_name", type=str, default="gpt-3.5-turbo", help="the name of the api model.")
     parser.add_argument("--path", type=str, 
                         default='./data/dummy/', help='source file & target save path.')
     parser.add_argument("--data_files", type=str,
@@ -141,7 +142,7 @@ def main():
         annotated_instances = []
         for idx, instruction in enumerate(instructions):
             input_value = {"input": input, "instruction": instruction}
-            content, cost = openai_chat_completion(input_value, template, decoding_args)
+            content, cost = openai_chat_completion(input_value, template, decoding_args, model_name=args.api_name)
             if content is None:
                 skip_num += 1
                 continue

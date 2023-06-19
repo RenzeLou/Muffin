@@ -55,7 +55,7 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0301"):
     return num_tokens
 
 
-def construct_prompt(input_dic: dict, template: ConversationPrompt, max_tokens=2048, model="gpt-3.5-turbo"):
+def construct_prompt(input_dic: dict, template: ConversationPrompt, max_tokens=2048, model="gpt-3.5-turbo-0301"):
     '''
     # cut long completion
     # assert the max length of chatgpt is 4096
@@ -90,7 +90,7 @@ def openai_chat_completion(
     input_dic: dict,
     template: ConversationPrompt,
     decoding_args,
-    model_name="gpt-3.5-turbo-0613",  # TODO: return back to gpt-3.5-turbo in the future
+    model_name="gpt-3.5-turbo-0301",  # TODO: 0301 will be deprecated since September 13th, 2023
     **decoding_kwargs,
 ):
     '''

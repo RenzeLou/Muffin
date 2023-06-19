@@ -72,6 +72,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--api_key", type=str, 
                         default=None, help="not recommended; better to set env varaible.")
+    parser.add_argument("--api_name", type=str, default="gpt-3.5-turbo", help="the name of the api model.")
     parser.add_argument("--choice", type=int, required=True, help="which prompt template to use: [0, 1]")
     parser.add_argument("--path", type=str, 
                         default='./data/dummy/', help='source file & target save path.')
@@ -148,7 +149,7 @@ def main():
             input_value = copy.deepcopy(demons_dict)
             input_value["target_instruction"] = instruction
             input_value["target_input"] = input
-            content, cost = openai_chat_completion(input_value, template, decoding_args)
+            content, cost = openai_chat_completion(input_value, template, decoding_args, model_name=args.api_name)
             if content is None:
                 skip_num += 1
                 continue
