@@ -11,6 +11,7 @@ Also print the statistics of the data after filtering.
 import argparse
 import json
 import os
+import random
 import re
 
 from tqdm import tqdm
@@ -44,6 +45,7 @@ def main():
     # TODO: I don't know if these meanningless responses are also helpful for tuning the model (alignments)
     parser.add_argument("--del_no_answer", action="store_true", help="whether to delete ChatGPT's no-answer response, such as 'Sorry, I cannot create a quiz as I am a language model AI...'.")
     parser.add_argument("--overwrite", action="store_true", help="overwrite the save file if it exists.")
+    parser.add_argument("--instance_num", type=int, default=None, help="number of instances used for training.")
 
     args, unparsed = parser.parse_known_args()
     if unparsed:
@@ -114,6 +116,18 @@ def main():
     print("Delete num:")
     print("==> identical instructions: {}, avg del num for each input: {}".format(sum(same_inst_del_num_list), sum(same_inst_del_num_list)/len(same_inst_del_num_list) if len(same_inst_del_num_list) > 0 else 0))
     print("==> no-answer instructions: {}, avg del num for each input: {}".format(sum(no_answer_del_num_list), sum(no_answer_del_num_list)/len(no_answer_del_num_list) if len(no_answer_del_num_list) > 0 else 0))
+    
+    if args.instance_num is not None:
+        print("*** Note that you choose to use only {} instances for training.".format(args.instance_num))
+        random.shuffle(all_inputs_del_2)
+        count = 0
+        new_all_inputs_del_2 = []
+        for input in all_inputs_del_2:
+            new_all_inputs_del_2.append(input)
+            count += len(input["instances"])
+            if count >= args.instance_num:
+                break
+        all_inputs_del_2 = new_all_inputs_del_2
     
     # count how many instances are remained
     instances_num_list = []
