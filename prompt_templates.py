@@ -329,11 +329,51 @@ class ConversationPromptConstraint_2(ConversationPrompt):
         content = content.strip()
          
         return content
+    
+
+# used for generating wrong output candidates, to expand more classifcation options
+class ConversationPromptWrongOutputs(ConversationPrompt):
+    ''' develop more outputs that are worse than the given output '''
+    def __init__(self):
+        super().__init__()
+        self.seperator = r"Wrong Output \d+:" ## Wrong Output 1: Wrong Output 2: .. Wrong Output n:
+        self.system = (
+            "You are a helpful assistant. "
+        )
+        
+        self.requirement_prompt = (
+            "1. The output candidates you generate should be worse than the given correct output, e.g., wrong or imperfect answers.\n" +
+            "2. You are encouraged to generate some challenging output candidates, that are close to the correct output but not the most desired one (i.e., containing certain errors).\n" +
+            "3. You are encouraged to generate as many output candidates as possible; If you think there are no more suitable output candidates, end up with 'None'.\n"
+        )
+        self.query_prompt = (
+            "Given a task, a task input, and a corresponding correct output, generate more output candidates for this task.\n\n" +
+            "### Requirements:\n" +
+            self.requirement_prompt + "\n" +
+            "### Task:\n" +
+            "{instruction}\n\n" +
+            "### Input:\n" + 
+            "{input}\n\n" +
+            "### Output:\n" + 
+            "{output}\n\n" +
+            "Wrong Output 1:\n"
+        )
+        
+    def extract_content(self, content:str):
+        # Remove the "None" at the end
+        # content = re.sub(r"(None\.|None|none\.|none)", "", content) 
+        content = re.sub(r"(None\.?|none\.?)+$", "", content)
+        items = re.split(self.seperator, content)
+        # Remove any empty elements from the list
+        items = [item.strip() for item in items if item.strip() != ""]
+        
+        return items
+
 
 if __name__ == "__main__":
-    prompt = ConversationPromptAttribute()
-    test_input = {"input": "This is a test input."}
-    print(prompt.query_prompt.format_map(test_input))
+    # prompt = ConversationPromptAttribute()
+    # test_input = {"input": "This is a test input."}
+    # print(prompt.query_prompt.format_map(test_input))
     # test_content = "Identify the total number of characters in the input.\n\n" + \
     #     "Attribute 2:\n" + \
     #     "Determine the number of uppercase letters in the input.\n\n" + \
@@ -346,14 +386,14 @@ if __name__ == "__main__":
     # print("\n\nExtracted attributes:")
     # print(prompt.extract_content(test_content))
     
-    test_content = "Identify the total number of characters in the input.\n\n" + \
-        "Task 2:\n" + \
-        "Determine the number of uppercase letters (such as 'None') in the input.\n\n" + \
-        "Task 3:\n" + \
-        "Count the number of lowercase letters in the input.\n\n" + \
-        "Task 17:\n" + \
-        "Count the number of characters that are neither vowels nor consonants (i.e., digits and special characters) in the input, e.g., none.\n\n" + \
-        "None."
+    # test_content = "Identify the total number of characters in the input.\n\n" + \
+    #     "Task 2:\n" + \
+    #     "Determine the number of uppercase letters (such as 'None') in the input.\n\n" + \
+    #     "Task 3:\n" + \
+    #     "Count the number of lowercase letters in the input.\n\n" + \
+    #     "Task 17:\n" + \
+    #     "Count the number of characters that are neither vowels nor consonants (i.e., digits and special characters) in the input, e.g., none.\n\n" + \
+    #     "None."
     # test_content = "None."
     
     # prompt = ConversationPromptTask()
@@ -400,5 +440,19 @@ if __name__ == "__main__":
     #               "instruction_8": "This is a test instruction 8.", "constraint_8": "This is a test constraint 8.", "input_8": "This is a test input 8.",
     #               "target_instruction": "This is a test target instruction.", "target_input": "This is a test target input."}
     # print(prompt.query_prompt.format_map(test_input))
+    
+    prompt = ConversationPromptWrongOutputs()
+    test_input = {"instruction": "This is a test instruction.", "input": "This is a test input.", "output": "This is a test output."}
+    # print(prompt.query_prompt.format_map(test_input))
+    
+    # test_content = "test content 1\n\n" + \
+    #             "Wrong Output 2:\n" + \
+    #             "test content 2\n\n" + \
+    #             "Wrong Output 3:\n" + \
+    #             "test content 3\n\n" + \
+    #             "None."
+    # test_content = "frience." + \
+    #     "None."
+    # print(prompt.extract_content(test_content))
     
 
