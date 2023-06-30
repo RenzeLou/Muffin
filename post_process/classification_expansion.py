@@ -37,13 +37,14 @@ def convert_char_to_integer(char):
 # ALPHABET = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"] + \
 #             ["K", "L", "M", "N", "O", "P", "Q", "R", "S", "T"] + \
 #             ["U", "V", "W", "X", "Y", "Z"]
+# using much more candidates symbols is verified to be slightly better
 INTEGER = [str(i) for i in range(18278)] # from '0' to '18277'
 ALPHABET = [convert_integer_to_char(i) for i in range(18288)] # from 'A' to 'ZZZ'
 MARK = ["@", "#", "$", "%", "^", "&", "*", "+", "!", "?"]
 OPTION_SYMBOLS = [ALPHABET, INTEGER, MARK]
 
-CONNECT_SYMBOLS = [":"]  # ["-", "_", ":", "=", "~", ".", "|"] TODO: I don't know if we should use more diverse connect symbols
-BRACKET_SYMBOLS = [("(", ")")]  # [("(", ")"), ("[", "]"), ("{", "}"), ("<", ">"), ("'", "'"), ("", "")] TODO: I don't know if we should use more diverse bracket symbols
+CONNECT_SYMBOLS = ["-", "_", ":", "=", "~", ".", "|"]  # [":"] TODO: using more diverse connect symbols is verified to be slightly better
+BRACKET_SYMBOLS = [("(", ")"), ("[", "]"), ("{", "}"), ("<", ">"), ("'", "'"), ("", "")]  # [("(", ")")] TODO: using more diverse bracket symbols is verified to be slightly better
 
 CONSTRANTS_LANGUAGE = ["Your answer should be a single letter from ",
                        "The options are ",
