@@ -78,7 +78,10 @@ def construct_classification_task(output:str, wrong_outputs:list, add_constraint
     max_num = max([len(ALPHABET), len(INTEGER), len(MARK)])
     target_num = len(wrong_outputs) + 1
     if target_num > max_num:
-        raise ValueError("The number of wrong outputs {} is larger than the max number {}.".format(len(wrong_outputs), max_num))
+        # cut the wrong outputs to the max number
+        print("WARNING: The number of outputs {} is larger than the max number {}. Cut it to {}.".format(target_num, max_num, max_num))
+        wrong_outputs = wrong_outputs[:max_num - 1]
+        target_num = len(wrong_outputs) + 1
     all_symbols = []
     while len(all_symbols) < target_num:
         # randomly choose a category of symbols

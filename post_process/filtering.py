@@ -139,7 +139,7 @@ def main():
     print("Delete num:")
     print("==> identical instructions: {}, avg del num for each input: {}".format(sum(same_inst_del_num_list), sum(same_inst_del_num_list)/len(same_inst_del_num_list) if len(same_inst_del_num_list) > 0 else 0))
     print("==> no-answer instructions: {}, avg del num for each input: {}".format(sum(no_answer_del_num_list), sum(no_answer_del_num_list)/len(no_answer_del_num_list) if len(no_answer_del_num_list) > 0 else 0))
-    # print("==> same answer instructions per input: {}, avg del num for each input: {}".format(sum(same_answer_del_num_list), sum(same_answer_del_num_list)/len(same_answer_del_num_list) if len(same_answer_del_num_list) > 0 else 0))
+    # print("==> same-answer instructions: {}, avg del num for each input: {}".format(sum(same_answer_del_num_list), sum(same_answer_del_num_list)/len(same_answer_del_num_list) if len(same_answer_del_num_list) > 0 else 0))
     
     if args.instance_num is not None:
         print("*** Note that you choose to use only {} instances for training.".format(args.instance_num))
