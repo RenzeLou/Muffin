@@ -3,7 +3,8 @@ Use this script to conduct a simple filtering on generated instruction data
 Two rules:
 (1). delete the same instructions for each input
 (2). delete those no-answer instructions (invalid instructions)
-(3). [optional] delete those input with only a few instructions (threshold); the threshold is set empirically (according to the data distribution)
+(3). [optional] for each input, delete those instances that have the same output (because x is the same, insturction is different. It will be meaningless if output is the same.)
+(4). [optional] delete those input with only a few instructions (threshold); the threshold is set empirically (according to the data distribution)
 
 Also print the statistics of the data after filtering.
 '''
@@ -111,32 +112,55 @@ def main():
         input["instances"] = all_instructions_del
         all_inputs_del_2.append(input)
     
+    # TODO: I am not sure if this is helpful, since it is reasonable that different task instructions may lead to the same output (e.g., "yes"/"no" classification).
+    # print("==> delete those instances that have the same output")
+    # all_inputs_del_3 = []
+    # same_answer_del_num_list = []
+    # for input in tqdm(all_inputs_del_2):
+    #     all_instructions = input["instances"]
+    #     all_instructions_del = []
+    #     same_answer_inst_del_num = 0
+    #     output_list = []
+    #     for idx, instruction in enumerate(all_instructions):
+    #         output = instruction["output"]
+    #         if output in output_list:
+    #             same_answer_inst_del_num += 1
+    #             continue
+    #         all_instructions_del.append(instruction)
+    #         output_list.append(output)
+    #     same_answer_del_num_list.append(same_answer_inst_del_num)
+    #     input["instances"] = all_instructions_del
+    #     all_inputs_del_3.append(input)
+    all_inputs_del_3 = all_inputs_del_2
+                
+    
     # TODO: delete those input with only a few instructions (threshold); but I am not sure if this is helpful.
     
     print("Delete num:")
     print("==> identical instructions: {}, avg del num for each input: {}".format(sum(same_inst_del_num_list), sum(same_inst_del_num_list)/len(same_inst_del_num_list) if len(same_inst_del_num_list) > 0 else 0))
     print("==> no-answer instructions: {}, avg del num for each input: {}".format(sum(no_answer_del_num_list), sum(no_answer_del_num_list)/len(no_answer_del_num_list) if len(no_answer_del_num_list) > 0 else 0))
+    # print("==> same answer instructions per input: {}, avg del num for each input: {}".format(sum(same_answer_del_num_list), sum(same_answer_del_num_list)/len(same_answer_del_num_list) if len(same_answer_del_num_list) > 0 else 0))
     
     if args.instance_num is not None:
         print("*** Note that you choose to use only {} instances for training.".format(args.instance_num))
-        random.shuffle(all_inputs_del_2)
+        random.shuffle(all_inputs_del_3)
         count = 0
-        new_all_inputs_del_2 = []
-        for input in all_inputs_del_2:
-            new_all_inputs_del_2.append(input)
+        new_all_inputs_del_3 = []
+        for input in all_inputs_del_3:
+            new_all_inputs_del_3.append(input)
             count += len(input["instances"])
             if count >= args.instance_num:
                 break
-        all_inputs_del_2 = new_all_inputs_del_2
+        all_inputs_del_3 = new_all_inputs_del_3
     
     # count how many instances are remained
     instances_num_list = []
-    for input in all_inputs_del_2:
+    for input in all_inputs_del_3:
         instructions = input["instances"]
         instances_num_list.append(len(instructions))
         
     print("Instance num:")
-    print("==> all input: {}".format(len(all_inputs_del_2)))
+    print("==> all input: {}".format(len(all_inputs_del_3)))
     print("==> all instances: {}, avg num for each input: {}".format(sum(instances_num_list), sum(instances_num_list)/len(instances_num_list) if len(instances_num_list) > 0 else 0))
 
 
@@ -149,7 +173,7 @@ def main():
     # save the filtered data
     print("Save the filtered data at {}.".format(args.save_file))
     with open(args.save_file, "w") as f:
-        json.dump(all_inputs_del_2, f, indent=2)
+        json.dump(all_inputs_del_3, f, indent=2)
     
 if __name__ == "__main__":    
     main()
