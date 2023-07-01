@@ -43,8 +43,8 @@ ALPHABET = [convert_integer_to_char(i) for i in range(18288)] # from 'A' to 'ZZZ
 MARK = ["@", "#", "$", "%", "^", "&", "*", "+", "!", "?"]
 OPTION_SYMBOLS = [ALPHABET, INTEGER, MARK]
 
-CONNECT_SYMBOLS = ["-", "_", ":", "=", "~", ".", "|"]  # [":"] TODO: using more diverse connect symbols is verified to be slightly better
-BRACKET_SYMBOLS = [("(", ")"), ("[", "]"), ("{", "}"), ("<", ">"), ("'", "'"), ("", "")]  # [("(", ")")] TODO: using more diverse bracket symbols is verified to be slightly better
+CONNECT_SYMBOLS = [":"]  # ["-", "_", ":", "=", "~", ".", "|"] TODO: using less connect symbols is verified to be slightly better
+BRACKET_SYMBOLS = [("(", ")"),("'", "'")]  # [("(", ")"), ("[", "]"), ("{", "}"), ("<", ">"), ("'", "'"), ("", "")] TODO: using less bracket symbols is verified to be slightly better
 
 CONSTRANTS_LANGUAGE = ["Your answer should be a single letter from ",
                        "The options are ",

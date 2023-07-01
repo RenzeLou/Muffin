@@ -413,6 +413,10 @@ if __name__ == "__main__":
     # test_input = {"input": "This is a test input.", "hint": "This is a test hint."}
     # print(prompt.query_prompt.format_map(test_input))
     
+    prompt = ConversationPromptTask_3()
+    test_input = {"input": "This is a test input.", "hint": "This is a test hint.", "example_1": "This is a test example 1.", "example_2": "This is a test example 2.", "example_3": "This is a test example 3."}
+    print(prompt.query_prompt.format_map(test_input))
+    
     # prompt = ConversationPromptTask_4()
     # test_input = {"input": "This is a test input.", "hint": "This is a test hint.", "example_1": "This is a test example 1.", "example_2": "This is a test example 2.", "example_3": "This is a test example 3."}
     # print(prompt.query_prompt.format_map(test_input))
