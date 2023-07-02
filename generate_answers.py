@@ -81,21 +81,41 @@ def process_input_files(args):
                 id2instances[ins_id]["cost"] += instance["cost"]
     
     else:
-        # read the input file (adter adding constraints, the input file has already been formulated as id2instances)
+        # read the input file (after adding constraints, the input file has already been formulated as id2instances)
+        
+        ## simply concatenate the instructions and constraints
+        # with open(os.path.join(args.path, args.data_files), "r") as f:
+        #     ori_id2instances = json.load(f)
+        # id2instances = {}
+        # for ins_id, ins in ori_id2instances.items():
+        #     instructions, constraints = ins["instructions"], ins["constraints"]
+        #     assert len(instructions) == len(constraints), "The number of instructions and constraints should be the same, but got {} and {}.".format(len(instructions), len(constraints))
+        #     new_instructions = []
+        #     for instruction, constraint in zip(instructions, constraints):
+        #         # combine the instruction and constraint together
+        #         instruction += "." if instruction[-1] not in string.punctuation else ""
+        #         constraint += "." if constraint[-1] not in string.punctuation else ""
+        #         new_instruction = f"{instruction} Output constraint: {constraint}"
+        #         new_instructions.append(new_instruction)
+        #     id2instances[ins_id] = {"input": ins["input"], "instructions": new_instructions, "cost": ins["cost"]}
+        
+        # don't concatenate the instructions and constraints here, we will do it later (when doing classification expansion)
         with open(os.path.join(args.path, args.data_files), "r") as f:
             ori_id2instances = json.load(f)
         id2instances = {}
         for ins_id, ins in ori_id2instances.items():
             instructions, constraints = ins["instructions"], ins["constraints"]
             assert len(instructions) == len(constraints), "The number of instructions and constraints should be the same, but got {} and {}.".format(len(instructions), len(constraints))
-            new_instructions = []
+            new_instructions, new_constraints = [], []
             for instruction, constraint in zip(instructions, constraints):
                 # combine the instruction and constraint together
                 instruction += "." if instruction[-1] not in string.punctuation else ""
                 constraint += "." if constraint[-1] not in string.punctuation else ""
-                new_instruction = f"{instruction} Output constraint: {constraint}"
+                new_instruction = instruction
+                new_constraint = constraint
                 new_instructions.append(new_instruction)
-            id2instances[ins_id] = {"input": ins["input"], "instructions": new_instructions, "cost": ins["cost"]}
+                new_constraints.append(new_constraint)
+            id2instances[ins_id] = {"input": ins["input"], "instructions": new_instructions, "constraints": new_constraints, "cost": ins["cost"]}
             
     return id2instances
 
@@ -137,11 +157,16 @@ def main():
     id2instances = dict(random.sample(list(id2instances.items()), min(args.instance_num, len(id2instances)))) if args.instance_num is not None else id2instances
     for input_id, input_ins in tqdm(id2instances.items(), total=len(id2instances)):
         input, instructions, all_cost = input_ins["input"], input_ins["instructions"], input_ins["cost"]
+        constraints = input_ins.get("constraints", None)
         # delete identical instructions to save money
-        instructions = filter_same_instructions(instructions)
+        if not args.constraint_added:
+            # if the constraints have been added, there is no need to filter (already doen in generate_constraints.py)
+            instructions = filter_same_instructions(instructions)
         annotated_instances = []
         for idx, instruction in enumerate(instructions):
-            input_value = {"input": input, "instruction": instruction}
+            constraint = constraints[idx] if constraints is not None else None
+            query_instruction = f"{instruction} Output constraint: {constraint}" if constraint is not None else instruction
+            input_value = {"input": input, "instruction": query_instruction}
             content, cost = openai_chat_completion(input_value, template, decoding_args, model_name=args.api_name)
             if content is None:
                 skip_num += 1
@@ -150,6 +175,8 @@ def main():
             input_value["cost"] = cost
             annotated_instance = copy.deepcopy(input_value)
             annotated_instance.pop("input")
+            annotated_instance["instruction"] = instruction
+            annotated_instance["constraint"] = constraint if constraint is not None else ""
             annotated_instances.append(annotated_instance)
             complete_num += 1
             all_cost += cost

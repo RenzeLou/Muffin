@@ -413,9 +413,9 @@ if __name__ == "__main__":
     # test_input = {"input": "This is a test input.", "hint": "This is a test hint."}
     # print(prompt.query_prompt.format_map(test_input))
     
-    prompt = ConversationPromptTask_3()
-    test_input = {"input": "This is a test input.", "hint": "This is a test hint.", "example_1": "This is a test example 1.", "example_2": "This is a test example 2.", "example_3": "This is a test example 3."}
-    print(prompt.query_prompt.format_map(test_input))
+    # prompt = ConversationPromptTask_3()
+    # test_input = {"input": "This is a test input.", "hint": "This is a test hint.", "example_1": "This is a test example 1.", "example_2": "This is a test example 2.", "example_3": "This is a test example 3."}
+    # print(prompt.query_prompt.format_map(test_input))
     
     # prompt = ConversationPromptTask_4()
     # test_input = {"input": "This is a test input.", "hint": "This is a test hint.", "example_1": "This is a test example 1.", "example_2": "This is a test example 2.", "example_3": "This is a test example 3."}
@@ -433,20 +433,20 @@ if __name__ == "__main__":
     #               "target_instruction": "This is a test target instruction."}
     # print(prompt.query_prompt.format_map(test_input))
     
-    # prompt = ConversationPromptConstraint_2()
-    # test_input = {"instruction_1": "This is a test instruction 1.", "constraint_1": "This is a test constraint 1.", "input_1": "This is a test input 1.",
-    #               "instruction_2": "This is a test instruction 2.", "constraint_2": "This is a test constraint 2.", "input_2": "This is a test input 2.",
-    #               "instruction_3": "This is a test instruction 3.", "constraint_3": "This is a test constraint 3.", "input_3": "This is a test input 3.",
-    #               "instruction_4": "This is a test instruction 4.", "constraint_4": "This is a test constraint 4.", "input_4": "This is a test input 4.",
-    #               "instruction_5": "This is a test instruction 5.", "constraint_5": "This is a test constraint 5.", "input_5": "This is a test input 5.",
-    #               "instruction_6": "This is a test instruction 6.", "constraint_6": "This is a test constraint 6.", "input_6": "This is a test input 6.",
-    #               "instruction_7": "This is a test instruction 7.", "constraint_7": "This is a test constraint 7.", "input_7": "This is a test input 7.",
-    #               "instruction_8": "This is a test instruction 8.", "constraint_8": "This is a test constraint 8.", "input_8": "This is a test input 8.",
-    #               "target_instruction": "This is a test target instruction.", "target_input": "This is a test target input."}
-    # print(prompt.query_prompt.format_map(test_input))
+    prompt = ConversationPromptConstraint_2()
+    test_input = {"instruction_1": "This is a test instruction 1.", "constraint_1": "This is a test constraint 1.", "input_1": "This is a test input 1.",
+                  "instruction_2": "This is a test instruction 2.", "constraint_2": "This is a test constraint 2.", "input_2": "This is a test input 2.",
+                  "instruction_3": "This is a test instruction 3.", "constraint_3": "This is a test constraint 3.", "input_3": "This is a test input 3.",
+                  "instruction_4": "This is a test instruction 4.", "constraint_4": "This is a test constraint 4.", "input_4": "This is a test input 4.",
+                  "instruction_5": "This is a test instruction 5.", "constraint_5": "This is a test constraint 5.", "input_5": "This is a test input 5.",
+                  "instruction_6": "This is a test instruction 6.", "constraint_6": "This is a test constraint 6.", "input_6": "This is a test input 6.",
+                  "instruction_7": "This is a test instruction 7.", "constraint_7": "This is a test constraint 7.", "input_7": "This is a test input 7.",
+                  "instruction_8": "This is a test instruction 8.", "constraint_8": "This is a test constraint 8.", "input_8": "This is a test input 8.",
+                  "target_instruction": "This is a test target instruction.", "target_input": "This is a test target input."}
+    print(prompt.query_prompt.format_map(test_input))
     
-    prompt = ConversationPromptWrongOutputs()
-    test_input = {"instruction": "This is a test instruction.", "input": "This is a test input.", "output": "This is a test output."}
+    # prompt = ConversationPromptWrongOutputs()
+    # test_input = {"instruction": "This is a test instruction.", "input": "This is a test input.", "output": "This is a test output."}
     # print(prompt.query_prompt.format_map(test_input))
     
     # test_content = "test content 1\n\n" + \

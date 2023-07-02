@@ -46,7 +46,7 @@ OPTION_SYMBOLS = [ALPHABET, INTEGER, MARK]
 CONNECT_SYMBOLS = [":"]  # ["-", "_", ":", "=", "~", ".", "|"] TODO: using less connect symbols is verified to be slightly better
 BRACKET_SYMBOLS = [("(", ")"),("'", "'")]  # [("(", ")"), ("[", "]"), ("{", "}"), ("<", ">"), ("'", "'"), ("", "")] TODO: using less bracket symbols is verified to be slightly better
 
-CONSTRANTS_LANGUAGE = ["Your answer should be a single letter from ",
+CLS_CONSTRANTS_LANGUAGE = ["Your answer should be a single letter from ",
                        "The options are ",
                        "Output constraints: ",
                        "The answer should be one of ",
@@ -73,6 +73,17 @@ CONSTRANTS_LANGUAGE = ["Your answer should be a single letter from ",
                         "Your answer should match one of the following: ",
                         "Please use only the characters listed here: "
                     ]
+GEN_CONSTRANTS_LANGUAGE = ["Output constraints: ", "Output requirements: ", "Output restrictions: ", "Output limitations: ", "Output demands: ", "Output prerequisites: ",
+                           "Answer constraints: ", "Answer requirements: ", "Answer restrictions: ", "Answer limitations: ", "Answer demands: ", "Answer prerequisites: ",
+                           "Constraints: ", "Requirements: ", "Restrictions: ", "Limitations: ", "Demands: ", "Prerequisites: ",
+                           "The constraints are: ", "The requirements are: ", "The restrictions are: ", "The limitations are: ", "The demands are: ", "The prerequisites are: ",
+                           "The constraints are as follows: ", "The requirements are as follows: ", "The restrictions are as follows: ", "The limitations are as follows: ", "The demands are as follows: ", "The prerequisites are as follows: ",
+                           "The constraints are listed below: ", "The requirements are listed below: ", "The restrictions are listed below: ", "The limitations are listed below: ", "The demands are listed below: ", "The prerequisites are listed below: "]
+
+
+def match_none(input_string):
+    pattern = r"(?i)none[\W]*"
+    return bool(re.match(pattern, input_string))
 
 
 def construct_classification_task(output:str, wrong_outputs:list, add_constraints:bool=False):
@@ -106,7 +117,7 @@ def construct_classification_task(output:str, wrong_outputs:list, add_constraint
     random.shuffle(target_symbols)
     # construction the final instruction and constraints
     option_instruction = "\n".join(final_instructions)
-    option_constraints = random.choice(CONSTRANTS_LANGUAGE)
+    option_constraints = random.choice(CLS_CONSTRANTS_LANGUAGE)
     constraints_bracket_symbol = random.choice(BRACKET_SYMBOLS)
     option_constraints += constraints_bracket_symbol[0]
     for id, symbol in enumerate(target_symbols):
@@ -152,10 +163,16 @@ def main():
             new_source_data["id"] = id + "-" + str(idx)
             new_source_data["input"], new_source_data["cost"] = input, all_cost
             new_source_data["instances"] = []
+            # put gen instance first
             first_ins = copy.deepcopy(ins)
             first_ins.pop("wrong_outputs")
+            constraint = first_ins.pop("constraint")
+            if constraint != "" and not match_none(constraint) and args.add_constraints:
+                temp = random.choice(GEN_CONSTRANTS_LANGUAGE)
+                first_ins["instruction"] += " " + temp + constraint
             new_source_data["instances"].append(first_ins)
             ori_ins_num += 1
+            # add more cls-version instances
             for i in range(args.cls_num):
                 new_ins = copy.deepcopy(ins)
                 if len(new_ins["wrong_outputs"]) > 0:
@@ -164,6 +181,7 @@ def main():
                     new_ins["instruction"] += "\n" + option_instruction
                     new_ins["output"] = correct_option
                     new_ins.pop("wrong_outputs")
+                    new_ins.pop("constraint")
                     new_source_data["instances"].append(new_ins)
                     new_cls_ins_num += 1
             target_datas.append(new_source_data)
