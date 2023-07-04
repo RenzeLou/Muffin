@@ -109,6 +109,15 @@ def main():
     
     print("==> saved to {}".format(save_file))
     print("==> skip: {} ; complete: {}".format(skip_num, complete_num))
+    
+    # save above screen print to a file
+    file_name = args.save_file.split("/")[-1].split(".")[0]
+    screen_save_path = os.path.join(args.path, "screen_print")
+    os.makedirs(screen_save_path, exist_ok=True)
+    with open(os.path.join(screen_save_path, file_name + ".txt"), "w") as f:
+        f.write("==> saved to {}\n".format(save_file))
+        f.write("==> skip: {} ; complete: {}\n".format(skip_num, complete_num))
+        
         
 if __name__ == "__main__":
     main()

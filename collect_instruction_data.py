@@ -25,7 +25,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--training_data_path",type=str,default='../Tk-Instruct/data/tasks')  # ../Tk-Instruct/data/tasks/def_segmentation
     parser.add_argument("--split_file",type=str,default="../Tk-Instruct/data/unique_source/train_tasks_unique_source.txt")
-    parser.add_argument("--save_path",type=str,default="./data/SuperNI_v3")
+    parser.add_argument("--save_path",type=str,default="./data/SuperNI_v4")
     parser.add_argument("--num_dataset",type=int,default=None)
     parser.add_argument("--num_instance",type=int,default=5)
     parser.add_argument("--seed",type=int,default=42)

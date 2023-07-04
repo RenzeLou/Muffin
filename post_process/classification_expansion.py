@@ -152,7 +152,9 @@ def main():
     # read the input file
     with open(os.path.join(args.path, args.data_files), "r") as f:
         source_datas = json.load(f)
-        
+    
+    input_num = len(source_datas)
+    
     target_datas = []
     ori_ins_num, new_cls_ins_num = 0, 0
     for source_data in tqdm(source_datas, total=len(source_datas)):
@@ -232,9 +234,23 @@ def main():
         all_ins = input["instances"]
         instances_num_list.append(len(all_ins))
         
+        
     print("Instance num:")
-    print("==> all input: {}".format(len(target_datas)))
-    print("==> all instances: {}, avg num for each input: {}".format(sum(instances_num_list), sum(instances_num_list)/len(instances_num_list) if len(instances_num_list) > 0 else 0))
+    print("==> input num: {}".format(input_num))
+    print("==> all (input + task) combination: {}".format(len(target_datas)))
+    print("==> all instances: {}, avg (cls + gen) num for each (input + task) combination: {}".format(sum(instances_num_list), sum(instances_num_list)/len(instances_num_list) if len(instances_num_list) > 0 else 0))
+    # save above screen print to a file
+    screen_save_path = os.path.join(args.path, "screen_print")
+    os.makedirs(screen_save_path, exist_ok=True)
+    with open(os.path.join(screen_save_path, args.save_file.split(".")[0] + ".txt"), "w", encoding="utf-8") as f:
+        f.write("Instance num:\n")
+        f.write("==> input num: {}\n".format(input_num))
+        f.write("==> all (input + task) combination: {}\n".format(len(target_datas)))
+        f.write("==> all instances: {}, avg (cls + gen) num for each (input + task) combination: {}\n".format(sum(instances_num_list), sum(instances_num_list)/len(instances_num_list) if len(instances_num_list) > 0 else 0))
+        # save the args as well
+        f.write("\n" + "*" * 50 + "\n")
+        f.write("Args:\n")
+        f.write(str(args))
 
 
     # name the save file as the instance num

@@ -162,10 +162,20 @@ def main():
     print("Instance num:")
     print("==> all input: {}".format(len(all_inputs_del_3)))
     print("==> all instances: {}, avg num for each input: {}".format(sum(instances_num_list), sum(instances_num_list)/len(instances_num_list) if len(instances_num_list) > 0 else 0))
+    # save above screen print to a file
+    screen_save_path = os.path.join(args.path, "screen_print")
+    os.makedirs(screen_save_path, exist_ok=True)
+    with open(os.path.join(screen_save_path, args.save_file.split(".")[0] + ".txt"), "w", encoding="utf-8") as f:
+        f.write("Delete num:\n")
+        f.write("==> identical instructions: {}, avg del num for each input: {}\n".format(sum(same_inst_del_num_list), sum(same_inst_del_num_list)/len(same_inst_del_num_list) if len(same_inst_del_num_list) > 0 else 0))
+        f.write("==> no-answer instructions: {}, avg del num for each input: {}\n".format(sum(no_answer_del_num_list), sum(no_answer_del_num_list)/len(no_answer_del_num_list) if len(no_answer_del_num_list) > 0 else 0))
+        f.write("Instance num:\n")
+        f.write("==> all input: {}\n".format(len(all_inputs_del_3)))
+        f.write("==> all instances: {}, avg num for each input: {}\n".format(sum(instances_num_list), sum(instances_num_list)/len(instances_num_list) if len(instances_num_list) > 0 else 0))
 
 
     # name the save file as the instance num
-    args.save_file = args.save_file.split(".")[0] + f"_{sum(instances_num_list)}.json"
+    # args.save_file = args.save_file.split(".")[0] + f"_{sum(instances_num_list)}.json"
     args.save_file = os.path.join(args.path, args.save_file)
     if os.path.exists(args.save_file) and not args.overwrite:
         raise ValueError("Save file {} already exists, set --overwrite to overwrite it.".format(args.save_file))

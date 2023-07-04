@@ -37,6 +37,8 @@ class OpenAIDecodingArguments(object):
     
 
 def filter_same_instructions(instructions: List[str]):
+    ori_len = len(instructions)
+    
     instructions = list(set(instructions))  # Remove exact duplicate elements
 
     # remove instructions that are substrings of other instructions
@@ -52,7 +54,10 @@ def filter_same_instructions(instructions: List[str]):
             
     instructions = filtered_instructions
     
-    return instructions
+    final_len = len(instructions)
+    deleted_num = ori_len - final_len
+    
+    return instructions, deleted_num
 
 
 def process_input_files(args):
@@ -154,6 +159,7 @@ def main():
     
     # annotate the instructions 
     target_datas, skip_num, complete_num = [], 0, 0
+    identical_del_num = []
     id2instances = dict(random.sample(list(id2instances.items()), min(args.instance_num, len(id2instances)))) if args.instance_num is not None else id2instances
     for input_id, input_ins in tqdm(id2instances.items(), total=len(id2instances)):
         input, instructions, all_cost = input_ins["input"], input_ins["instructions"], input_ins["cost"]
@@ -161,7 +167,8 @@ def main():
         # delete identical instructions to save money
         if not args.constraint_added:
             # if the constraints have been added, there is no need to filter (already doen in generate_constraints.py)
-            instructions = filter_same_instructions(instructions)
+            instructions, del_num = filter_same_instructions(instructions)
+            identical_del_num.append(del_num)
         annotated_instances = []
         for idx, instruction in enumerate(instructions):
             constraint = constraints[idx] if constraints is not None else None
@@ -190,6 +197,18 @@ def main():
     
     print("==> saved to {}".format(save_file))
     print("==> skip: {} ; complete: {}".format(skip_num, complete_num))
+    if len(identical_del_num) > 0:
+        print("==> identical instructions deleted num: {}, avg del for each input: {}".format(sum(identical_del_num), sum(identical_del_num)/len(identical_del_num)))
+    # save above screen print to a file
+    file_name = args.save_file.split("/")[-1].split(".")[0]
+    screen_save_path = os.path.join(args.path, "screen_print")
+    os.makedirs(screen_save_path, exist_ok=True)
+    with open(os.path.join(screen_save_path, file_name + ".txt"), "w") as f:
+        f.write("==> saved to {}\n".format(save_file))
+        f.write("==> skip: {} ; complete: {}\n".format(skip_num, complete_num))
+        if len(identical_del_num) > 0:
+            f.write("==> identical instructions deleted num: {}, avg del for each input: {}".format(sum(identical_del_num), sum(identical_del_num)/len(identical_del_num)))
+        
         
 if __name__ == "__main__":
     main()

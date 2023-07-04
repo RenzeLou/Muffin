@@ -24,10 +24,11 @@ use `gpt-3.5-turbo-0613` for `generate_constraints.py`, `generate_answers.py`, `
 ## TODO:
 
 ```bash
-python generate_constraints.py --path ./data/SuperNI_v3 --data_files add_generated_instructions_3.json,add_generated_instructions_4.json --save_file add_constraints.json --choice 0 --instance_num 200 --api_name gpt-3.5-turbo-0613 --overwrite
-python generate_answers.py --path ./data/SuperNI_v3 --data_files add_constraints.json --save_file add_answers_w_constraints.json --constraint_added --api_name gpt-3.5-turbo-0613 --overwrite
-python post_process/filtering.py --path ./data/SuperNI_v3 --data_files add_answers_w_constraints.json --save_file filtered_with_constraints.json --instance_num 7329 --overwrite
-python generate_wrong_candidates.py --api_name gpt-3.5-turbo-0613 --path ./data/SuperNI_v3 --data_files  filtered_with_constraints_7329.json --save_file add_classification_candidates_w_constraints.json --instance_num 200 --length_threshold 100 --overwrite
-
-python post_process/classification_expansion.py --path ./data/SuperNI_v3 --data_files add_classification_candidates_w_constraints.json --save_file mix_cls_w_constraints.json --cls_num 1 --add_constraints --instance_num 7329 --overwrite
+python generate_attributes.py --path ./data/SuperNI_v4 --data_file original_collection.json --save_file add_attributes.json --api_name gpt-3.5-turbo-0301 --overwrite
+python generate_instructions.py --path ./data/SuperNI_v4 --data_file add_attributes.json --save_file add_generated_instructions_4.json --template 4 --api_name gpt-3.5-turbo-0301 --overwrite
+python generate_instructions.py --path ./data/SuperNI_v4 --data_file add_attributes.json --save_file add_generated_instructions_3.json --template 3 --api_name gpt-3.5-turbo-0301 --overwrite
+python generate_answers.py --path ./data/SuperNI_v4 --data_files add_generated_instructions_3.json,add_generated_instructions_4.json --save_file add_answers_full.json --api_name gpt-3.5-turbo-0613 --overwrite
+python post_process/filtering.py --path ./data/SuperNI_v4 --data_files add_answers_full.json --save_file filtered_full.json --overwrite
+python generate_wrong_candidates.py --api_name gpt-3.5-turbo-0613 --path ./data/SuperNI_v4 --data_files filtered_full.json --save_file add_classification_candidates.json --length_threshold 100 --overwrite
+python post_process/classification_expansion.py --path ./data/SuperNI_v4 --data_files add_classification_candidates.json --save_file mix_cls.json --cls_num 1 --add_constraints --overwrite
 ```
