@@ -31,7 +31,7 @@ class OpenAIDecodingArguments(object):
     n: int = 1
     stream: bool = False
     # stop: Optional[List[str]] = dataclasses.field(default_factory=default_stop)
-    presence_penalty: float = 0.0
+    presence_penalty: float = 1.99
     frequency_penalty: float = 0.0
 
 

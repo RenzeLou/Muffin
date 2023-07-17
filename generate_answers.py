@@ -19,6 +19,11 @@ from tenacity import (
 
 from prompt_templates import ConversationPrompt, ConversationPromptAnswer, ConversationPromptTask, ConversationPromptTask_2
 from chat_completion import openai_chat_completion
+# from post_process.compute_metrics import rougeL_score
+
+import sys
+sys.path.append("./post_process")
+from compute_metrics import rougeL_score # noqa
 
 
 def default_stop() -> List[str]:
@@ -52,6 +57,27 @@ def filter_same_instructions(instructions: List[str]):
         if not included:
             filtered_instructions.append(instructions[i])
             
+    instructions = filtered_instructions
+    
+    final_len = len(instructions)
+    deleted_num = ori_len - final_len
+    
+    return instructions, deleted_num
+
+def filter_highly_overlapping_instructions(instructions: List[str], threshold=0.6):
+    ori_len = len(instructions)
+    
+    # remove instructions that are highly overlapping with other instructions
+    filtered_instructions = []
+    for instruction in instructions:
+        included = True
+        for filtered_instruction in filtered_instructions:
+            if rougeL_score(instruction, filtered_instruction) > threshold:
+                included = False
+                break
+        if included:
+            filtered_instructions.append(instruction)
+        
     instructions = filtered_instructions
     
     final_len = len(instructions)
@@ -140,6 +166,7 @@ def main():
     parser.add_argument("--overwrite", action="store_true", help="overwrite the save file if it exists.")
     parser.add_argument("--instance_num", type=int, default=None, help="number of instances (input) to annotate.")
     parser.add_argument("--constraint_added", action="store_true", help="whether the constraints have been added to the input file.")
+    parser.add_argument("--rouge_threshold", type=float, default=0.6, help="the rouge threshold for filtering highly overlapping instructions.")
 
     args, unparsed = parser.parse_known_args()
     if unparsed:
@@ -167,7 +194,9 @@ def main():
         # delete identical instructions to save money
         if not args.constraint_added:
             # if the constraints have been added, there is no need to filter (already doen in generate_constraints.py)
-            instructions, del_num = filter_same_instructions(instructions)
+            instructions, del_num_1 = filter_same_instructions(instructions)
+            instructions, del_num_2 = filter_highly_overlapping_instructions(instructions, args.rouge_threshold)
+            del_num = del_num_1 + del_num_2
             identical_del_num.append(del_num)
         annotated_instances = []
         for idx, instruction in enumerate(instructions):
