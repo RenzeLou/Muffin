@@ -56,13 +56,13 @@ class ConversationPromptAttribute(ConversationPrompt):
         self.requirement_prompt = (
             "1. Please brainstorm as many textual attributes as possible. If you think there are no more suitable attributes, end up with 'None'.\n" +
             "2. Be creative. Any interesting perspectives are welcome!\n" +
-            "3. Each attribute must concisely summarize one specific aspect of this text.\n" +
+            "3. Each attribute must concisely summarize one specific aspect of this input.\n" +
             "4. Feel free to ignore the tedious and specific content. Just focus on some general textual attributes!\n" +
             "5. Please prioritize your most confident predictions.\n"
         )
         self.query_prompt = (
-            "You are an expert in Natural Language Processing (NLP). Carefully read the given source text, and find out the textual attributes of this text.\n\n" +
-            "### Source Text:\n" +
+            "You are an expert in Natural Language Processing (NLP). Carefully read the given input (consists of one or several pieces of text), and find out the textual attributes of this input.\n\n" +
+            "### Input:\n" +
             "{input}\n\n" +
             "### Requirements:\n" +
             self.requirement_prompt + "\n" +
@@ -123,18 +123,91 @@ class ConversationPromptTask_2(ConversationPrompt):
             "Task 1:\n"
         )
         
+
+# class ConversationPromptTask_3(ConversationPrompt):
+#     ''' following the hint to brainstorm novel task instructions, also add 3-shot in-domain demonstrations '''
+#     def __init__(self):
+#         super().__init__()
+#         self.seperator = r"Task \d+:" ## Task 1: Task 2: .. Task n:
+#         self.requirement_prompt = (
+#             "1. Brainstorm as many textual tasks as possible. If you think there are no more suitable tasks, end up with 'None'.\n" +
+#             "2. You'll need to look at the hint as a direction to guide your thinking. Your responses should strictly be based on this hint!\n" +
+#             "3. Each task must be indivisible (one task, one intention).\n" +
+#             "4. Please prioritize your most confident predictions.\n" +
+#             "5. Avoid tasks requiring additional context, i.e., tasks must be easily solved/answered using only the input.\n" +
+#             "6. Your tasks should sufficiently describe how this input is expected to be mapped to an output text, i.e., elaborating the tasks in detail.\n" +
+#             "7. But do not disclose the final answer!\n"
+#         )
+#         self.demonstrations = (
+#             "1. {example_1}\n" +
+#             "2. {example_2}\n" +
+#             "3. {example_3}\n\n" +
+#             "### In a word, you should first describe what the input is, and what textual attribute it has, then elaborate on the task intent, and finally exactly describe what kind of output you expect and mention any necessary output constraints (e.g., formats, options).\n"
+#         )
+#         self.query_prompt = (
+#             "### Input:\n" + 
+#             "{input}\n\n" +
+#             "### Hint:\n" +
+#             "{hint}\n\n" +
+#             "### Instruction:\n" +
+#             "Based on the above hint, what kind of textual tasks can you develop that can be applied to the input?\n\n" +
+#             "### Format Examples (Imitate their formats, ignore the contents):\n" +
+#             self.demonstrations + "\n" +
+#             "### Requirements:\n" +
+#             self.requirement_prompt + "\n" +
+#             "Task 1:\n"
+#         )
+
+    
+# class ConversationPromptTask_4(ConversationPrompt):
+#     ''' shifting the attribute to generate task instructions, also add 3-shot in-domain demonstrations '''
+#     def __init__(self):
+#         super().__init__()
+#         self.seperator = r"Task \d+:" ## Task 1: Task 2: .. Task n:
+#         self.requirement_prompt = (
+#             "1. Brainstorm as many textual tasks as possible. If you think there are no more suitable tasks, end up with 'None'.\n" +
+#             "2. You'll need to look at the attribute as a direction to guide your thinking. \n" +
+#             "3. Each task must be indivisible (one task, one intention).\n" +
+#             "4. Please prioritize your most confident predictions.\n" +
+#             "5. Avoid tasks requiring additional context, i.e., tasks must be easily solved/answered using only the input.\n" +
+#             "6. Your tasks should sufficiently describe how this input is expected to be mapped to an output text, i.e., elaborating the tasks in detail.\n" +
+#             "7. But do not disclose the final answer!\n"
+#         )
+#         self.demonstrations = (
+#             "1. {example_1}\n" +
+#             "2. {example_2}\n" +
+#             "3. {example_3}\n\n" +
+#             "### In a word, you should first describe what the input is, and what textual attribute it has, then elaborate on the task intent, and finally exactly describe what kind of output you expect and mention any necessary output constraints (e.g., formats, options).\n"
+#         )
+#         self.query_prompt = (
+#             "### Input:\n" + 
+#             "{input}\n\n" +
+#             "### Attribute:\n" +
+#             "{hint}\n\n" +
+#             "### Instruction:\n" +
+#             "Based on the above information, what kind of textual tasks can you develop that can shift the input's attribute?\n\n" +
+#             "### Format Examples (Imitate their formats, ignore the contents):\n" +
+#             self.demonstrations + "\n" +
+#             "### Requirements:\n" +
+#             self.requirement_prompt + "\n" +
+#             "Task 1:\n"
+#         )           
+
         
 class ConversationPromptTask_3(ConversationPrompt):
     ''' following the hint to brainstorm novel task instructions, also add 3-shot in-domain demonstrations '''
     def __init__(self):
         super().__init__()
+        self.system = (
+            "You are a creative prompt engineer."
+        )
         self.seperator = r"Task \d+:" ## Task 1: Task 2: .. Task n:
         self.requirement_prompt = (
             "1. Brainstorm as many textual tasks as possible. If you think there are no more suitable tasks, end up with 'None'.\n" +
             "2. Please prioritize your most confident predictions.\n" +
-            "3. You are encouraged to design textual tasks that are challenging for readers to solve (e.g., requiring specific knowledge).\n" +
-            "4. Make sure that your tasks are detailed. Besides the given source text, you are encouraged to mention any necessary contexts in your task instructions to ensure your tasks are answerable.\n" +
-            "5. But do not disclose the final answer!\n"
+            "3. Avoid generating tasks that require accessing external tools or APIs.\n" +
+            "4. Ensure your textual tasks are detailed and sufficient, e.g., including any necessary contexts beyond the given input.\n" +
+            "5. Do not disclose the output (answer) of your tasks.\n"
         )
         self.demonstrations = (
             "1. {example_1}\n" +
@@ -143,15 +216,16 @@ class ConversationPromptTask_3(ConversationPrompt):
             "### In a word, you should first describe what the input is, and what textual attribute it has, then elaborate on the task intent, and finally exactly describe what kind of output you expect and mention any necessary output constraints (e.g., formats, options).\n"
         )
         self.query_prompt = (
-            "You are a creative prompt engineer. Given a source text, design diverse tasks that can process the source into a certain target text or label.\n\n" +
-            "### Source Text:\n" +
+            "You are a creative prompt engineer responsible for designing textual tasks to test the readers' problem-solving ability.\n" +
+            "A 'textual task' can be simply understood as a 'mapping function', which defines how to process an 'input' (source text) into a certain 'output' (target text).\n\n" +
+            "### Input (waits to be processed):\n" +
             "{input}\n\n" +
             "### Requirements:\n" +
             self.requirement_prompt + "\n" +
             "### Hint:\n" +
             "{hint}\n\n" +
-            "The above hint describes a specific attribute of the source text. Using the hint to guide your thinking, what kind of textual tasks can you develop to process the source text?\n\n" +
-            "Task 1:\n"
+            "What kind of textual tasks can you develop to process the input?\n\n" +
+            "Task 1: "
         )
 
     
@@ -166,8 +240,9 @@ class ConversationPromptTask_4(ConversationPrompt):
         self.requirement_prompt = (
             "1. Brainstorm as many textual tasks as possible. If you think there are no more suitable tasks, end up with 'None'.\n" +
             "2. Please prioritize your most confident predictions.\n" +
-            "3. Make sure that your tasks are detailed. Besides the given source text, you are encouraged to mention any necessary contexts in your task instructions to ensure your tasks are answerable.\n" +
-            "4. But do not disclose the final answer!\n"
+            "3. Avoid generating tasks that require accessing external tools or APIs.\n" +
+            "4. Ensure your textual tasks are detailed and sufficient, e.g., including any necessary contexts beyond the given input.\n" +
+            "5. Do not disclose the output (answer) of your tasks.\n"
         )
         self.demonstrations = (
             "1. {example_1}\n" +
@@ -176,16 +251,50 @@ class ConversationPromptTask_4(ConversationPrompt):
             "### In a word, you should first describe what the input is, and what textual attribute it has, then elaborate on the task intent, and finally exactly describe what kind of output you expect and mention any necessary output constraints (e.g., formats, options).\n"
         )
         self.query_prompt = (
-            "You are a creative prompt engineer. Given a source text, design diverse novel task instructions that can process the source into a certain target text.\n\n" +
-            "### Source Text:\n" +
+            "You are a creative prompt engineer responsible for designing textual tasks to test the readers' knowledge.\n" +
+            "A 'textual task' can be simply understood as a 'mapping function', which defines how to process an 'input' (source text) into a certain 'output' (target text).\n\n" +
+            "### Input (waits to be processed):\n" +
             "{input}\n\n" +
             "### Requirements:\n" +
             self.requirement_prompt + "\n" +
             "### Attribute:\n" +            
             "{hint}\n\n" +
-            "What kind of textual tasks can you develop that can shift the above attribute?\n\n" +
-            "Task 1:\n"
+            "Your tasks should also try to shift the above attribute of the input. So, what kind of textual tasks can you develop?\n\n" +
+            "Task 1: "
         )   
+
+
+# used for generating classification task instructions
+class ConversationPromptTask_CLS(ConversationPrompt):
+    ''' use 3-shot demonstrations '''
+    def __init__(self):
+        super().__init__()
+        self.system = (
+            "You are an expert in Natural Language Processing (NLP)."
+        )
+        self.seperator = r"Task \d+:" ## Task 1: Task 2: .. Task n:
+        self.requirement_prompt = ()
+        self.demonstrations = (
+            "1. {example_1}\n" +
+            "2. {example_2}\n" +
+            "3. {example_3}\n"
+        )
+        self.query_prompt = (
+            "You are an expert in Natural Language Processing (NLP). I want you to design a high-quality classification task based on the given information.\n" +
+            "A good classification task should clearly include any necessary information, e.g., all the possible answer options (in random order) and how to decide the category of a given input. If the input has already included the answer options, you don't have to repeat them.\n\n" +
+            "### Input:\n" +
+            "{input}\n\n" +
+            "### Attribute:\n" +
+            "{hint}\n\n" +
+            "Using the attribute as a clue, what classification task can you develop for this input?\n\n" +
+            "### Example Tasks (your task should imitate their formats):\n" +
+            self.demonstrations + "\n" +
+            "### Your task (do not disclose the answer):\n"
+        )   
+        
+    def extract_content(self, content:str):
+        content = content.strip()
+        return [content]  # return a list to ensure the consistency with other templates
 
 
 # used for annotating the output
@@ -413,9 +522,16 @@ if __name__ == "__main__":
     test_input = {"input": "This is a test input.", "hint": "This is a test hint.", "example_1": "This is a test example 1.", "example_2": "This is a test example 2.", "example_3": "This is a test example 3."}
     print(prompt.query_prompt.format_map(test_input))
     
-    # prompt = ConversationPromptTask_4()
-    # test_input = {"input": "This is a test input.", "hint": "This is a test hint.", "example_1": "This is a test example 1.", "example_2": "This is a test example 2.", "example_3": "This is a test example 3."}
-    # print(prompt.query_prompt.format_map(test_input))
+    print(10*"="+"\n\n")
+    
+    prompt = ConversationPromptTask_4()
+    test_input = {"input": "This is a test input.", "hint": "This is a test hint.", "example_1": "This is a test example 1.", "example_2": "This is a test example 2.", "example_3": "This is a test example 3."}
+    print(prompt.query_prompt.format_map(test_input))
+    
+    print(10*"="+"\n\n")
+    prompt = ConversationPromptTask_CLS()
+    test_input = {"input": "This is a test input.", "hint": "This is a test hint.", "example_1": "This is a test example 1.", "example_2": "This is a test example 2.", "example_3": "This is a test example 3."}
+    print(prompt.query_prompt.format_map(test_input))
     
     # prompt = ConversationPromptConstraint()
     # test_input = {"instruction_1": "This is a test instruction 1.", "constraint_1": "This is a test constraint 1.",

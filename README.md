@@ -32,3 +32,11 @@ python post_process/filtering.py --path ./data/SuperNI_v4 --data_files add_answe
 python generate_wrong_candidates.py --api_name gpt-3.5-turbo-0613 --path ./data/SuperNI_v4 --data_files filtered_full.json --save_file add_classification_candidates.json --length_threshold 100 --overwrite
 python post_process/classification_expansion.py --path ./data/SuperNI_v4 --data_files add_classification_candidates.json --save_file mix_cls.json --cls_num 1 --add_constraints --overwrite
 ```
+
+```bash
+python generate_attributes.py
+python generate_instructions_CLS.py --path ./data/SuperNI_v4 --data_file add_attributes.json --save_file add_generated_instructions_cls.json --api_name gpt-3.5-turbo-0301 --overwrite
+python generate_answers.py --path ./data/SuperNI_v4 --data_files add_generated_instructions_cls.json --save_file add_answers_cls.json --api_name gpt-3.5-turbo-0613 --overwrite
+python post_process/filtering.py
+mix
+```
