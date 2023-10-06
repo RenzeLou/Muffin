@@ -79,7 +79,7 @@
     <div class="container is-max-desktop">
       <div class="columns is-centered">
         <div class="column has-text-centered">
-          <h3 class="title is-1 publication-title">MUFFIN: Curating Multi-Faceted Instructions for Improving Instruction-Following</h3>
+          <h3 class="title is-1 publication-title"><span class="muffin-font">MUFFIN</span>: Curating Multi-Faceted Instructions for Improving Instruction-Following</h3>
           <div class="is-size-5 publication-authors">
             <!-- Paper authors -->
             <span class="author-block">
@@ -158,12 +158,21 @@
               </span>
               <!-- Dataset Link. -->
               <span class="link-block">
-                <a href="TODO"
+                <a href="https://huggingface.co/datasets/Reza8848/MUFFIN_68k"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                     🤗
                   </span>
                   <span>Data</span>
+                  </a>
+              <!-- Model Link. -->
+              <span class="link-block">
+                <a href="https://huggingface.co/Reza8848/MUFFIN-T5-3B"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    🤗
+                  </span>
+                  <span>Models</span>
                   </a>
               <!-- Video Link. -->
               <!-- <span class="link-block">
@@ -184,15 +193,7 @@
                   </span>
                   <span>Code</span>
                   </a>
-              <!-- Model Link. -->
-              <span class="link-block">
-                <a href="TODO"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-github"></i>
-                  </span>
-                  <span>Models</span>
-                  </a>
+              
               <!--  Link. -->
               <span class="link-block">
                 <a href="TODO"
@@ -231,14 +232,37 @@
 </section> -->
 
 
+
+
     <!-- Abstract. -->
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
         <h2 class="title is-3">Abstract</h2>
+
+          <!-- Paradigm Illustration -->
+            <section class="hero">
+              <div class="hero-body">
+                  <div class="container is-max-desktop">
+                      <div class="columns is-centered">
+                          <div class="column is-full">
+                              <div class="item">
+                                  <!-- Your image here -->
+                                  <img src="static/images/paradigms.png" alt="DataCollection" />
+                                  <h2 class="subtitle"  style="text-align:center;">
+                                      Figure 1: Three different paradigms for designing instruction-following datasets.
+                                  </h2>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              </section>
+              <!-- End Paradigm Illustration -->
+
         <div class="content has-text-justified">
           <p>
             In the realm of large language models (LLMs), enhancing instruction-following capability often involves curating expansive training data. This is achieved through two primary schemes:
-            i) Scaling-Inputs: Amplifying (input, output) pairs per task instruction, aiming for better instruction adherence. ii) Scaling Input-Free Tasks: Enlarging tasks, each composed of an (instruction, output) pair (without requiring a separate input anymore). However, LLMs under Scaling-Inputs tend to be overly sensitive to inputs, leading to misinterpretation or non-compliance with instructions. Conversely, Scaling Input-Free Tasks demands a substantial number of tasks but is less effective in instruction following when dealing with instances in Scaling-Inputs. This work introduces MUFFIN, a new scheme of instruction-following dataset curation. Specifically, we automatically Scale Tasks per Input by diversifying these tasks with various input facets. Experimental results across four zero-shot benchmarks, spanning both Scaling-Inputs and Scaling Input-Free Tasks schemes, reveal that LLMs, at various scales, trained on MUFFIN generally demonstrate superior instruction-following capabilities compared to those trained on the two aforementioned schemes.
+            i) Scaling-Inputs: Amplifying (input, output) pairs per task instruction, aiming for better instruction adherence. ii) Scaling Input-Free Tasks: Enlarging tasks, each composed of an (instruction, output) pair (without requiring a separate input anymore). However, LLMs under Scaling-Inputs tend to be overly sensitive to inputs, leading to misinterpretation or non-compliance with instructions. Conversely, Scaling Input-Free Tasks demands a substantial number of tasks but is less effective in instruction following when dealing with instances in Scaling-Inputs. This work introduces <span class="printerFont">MUFFIN</span>, a new scheme of instruction-following dataset curation. Specifically, we automatically Scale Tasks per Input by diversifying these tasks with various input facets. Experimental results across four zero-shot benchmarks, spanning both Scaling-Inputs and Scaling Input-Free Tasks schemes, reveal that LLMs, at various scales, trained on <span class="printerFont">MUFFIN</span> generally demonstrate superior instruction-following capabilities compared to those trained on the two aforementioned schemes.
             We present the first method capable of photorealistically reconstructing a non-rigidly
             deforming scene using photos/videos captured casually from mobile phones.
           </p>
@@ -273,42 +297,92 @@
 
 
 
+
+
 <!-- Method. -->
 <div class="columns is-centered has-text-centered">
   <div class="column is-four-fifths">
     <h2 class="title is-3">Data Curation</h2>
-    <div class="content has-text-justified">
-      <p>
-        TODO
-      </p>
-    </div>
-  </div>
-</div>
-<!--/ Abstract. -->
 
-
-
-
-
-    <!-- Method Overview -->
-    <section class="hero">
-      <div class="hero-body">
-          <div class="container is-max-desktop">
-              <div class="columns is-centered">
-                  <div class="column is-full">
-                      <div class="item">
-                          <!-- Your image here -->
-                          <img src="static/images/data_collection.png" alt="DataCollection" />
-                          <h2 class="subtitle">
-                              Figure 1: The overall data curation pipeline of MUFFIN.
-                          </h2>
+        <!-- Method Overview -->
+        <section class="hero">
+          <div class="hero-body">
+              <div class="container is-max-desktop">
+                  <div class="columns is-centered">
+                      <div class="column is-full">
+                          <div class="item">
+                              <!-- Your image here -->
+                              <img src="static/images/data_collection.png" alt="DataCollection" />
+                              <h2 class="subtitle"  style="text-align:center;">
+                                  Figure 2: The overall data curation pipeline of <span class="muffin-font">MUFFIN</span>.
+                              </h2>
+                          </div>
                       </div>
                   </div>
               </div>
           </div>
-      </div>
-  </section>
-  <!-- End Method Overview -->
+      </section>
+      <!-- End Method Overview -->
+
+    <div class="content has-text-justified">
+      As shown in Figure 2, the data curation strategy of <span class="printerFont">MUFFIN</span> mainly consists of following steps: 
+          <ol>
+            <li><strong>Input Collection:</strong>
+              <br>&nbsp &nbsp - We randomly sample input texts from two distinct sources to ensure textual diversity</li> 
+            <li><strong>Instruction Collection (we use two different instruction collection methods):</strong>
+              <br>&nbsp &nbsp - <i><u>Instruction Brainstorm Based on Inputs' Facets.</u></i> We first prompt LLMs (i.e., ChatGPT) to generate various textual facets (or attributes) for the given input text. Next, regarding the facets as "<i>hint</i>", we further prompt LLMs to brainstorm corresponding tasks instructions, ensuring the input-instruction relevance.</li>
+              &nbsp &nbsp - <i><u>Instruction Rematching.</u></i> We gather suitable instructions from existing human-annotated sets. For each input-instruction pair, we ask LLMs (i.e., GPT-4) to determine if the instruction can align with the input to form a valid task.</li>
+            <li><strong>Output Annotation:</strong>
+              <br>&nbsp &nbsp - We use LLMs (i.e., ChatGPT) to annotate outputs, or mark them as “None” for instances that ChatGPT deems unanswerable</li>
+              <li><strong>Instruction Filtering:</strong>
+                <br>&nbsp &nbsp - We filter those overlapped task instructions (the ROUGE-L score with any existing instructions is larger than 0.7) and non-answerable instructions (the outputs are marked as “None” by LLMs).</li> 
+                <li><strong>Classification Expansion:</strong>
+                  <br>&nbsp &nbsp - For each brainstormed instrucion, we ask LLMs (i.e., ChatGPT) to generate some "<i>wrong outputs</i>" that should be suboptimal compared to the correct output. We then combine
+                  the correct output with these wrong outputs to form the whole output space of this task (i.e., transforming it into a classification paradigm). </li>
+          </ol>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+<!-- Method. -->
+<div class="columns is-centered has-text-centered">
+  <div class="column is-four-fifths">
+    <h2 class="title is-3">Automatic Evaluation Results</h2>
+
+      <!-- Main Table Overview -->
+      <section class="hero">
+        <div class="hero-body">
+            <div class="container is-max-desktop">
+                <div class="columns is-centered">
+                    <div class="column is-full">
+                        <div class="item">
+                            <!-- Your image here -->
+                            <img src="static/images/main_table.png" alt="MainTable" />
+                            <!-- <h2 class="subtitle"  style="text-align:center;">
+                                Figure : TODO
+                            </h2> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<div class="content has-text-justified">
+  <p>
+    We evaluate models (T5-3B & T5-11B) trained with <span class="printerFont">MUFFIN</span> on four widely adopted zero-shot benchmarks, including SuperNI-Test, MMLU, T0-Eval and BBH.
+  </p>
+</div>
+</div>
+</div>
+
+
 
 
 <section class="section">

@@ -17,6 +17,17 @@ body {
   font-variant: small-caps;
 }
 
+.muffin-font {
+  font-family: "Georgia";
+  /* font-size: 10px; */
+  /* color: red; */
+}
+
+.printerFont {
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+}
+
 
 .teaser .hero-body {
   padding-top: 0;
