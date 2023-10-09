@@ -1,0 +1,26 @@
+[
+  {
+    "id": "SuperNI-task497-a64b7077fb0d4fdf89d3726092fa5e02",
+    "instruction": "In this task, you are given an input list A. You need to find all the elements of the list that are numbers in the same order as they appear in the list A.",
+    "input": "['j', 'q', '8017', 'V', '6183', 'j', '2557', '7093', 'P', '1597', 'G']",
+    "output": [
+      "8017, 6183, 2557, 7093, 1597"
+    ]
+  },
+  {
+    "id": "SuperNI-task497-fb37fcbba8e34d8080112b20be16ca0f",
+    "instruction": "In this task, you are given an input list A. You need to find all the elements of the list that are numbers in the same order as they appear in the list A.",
+    "input": "['P', '3043', 'y', 'Z', '2839', '2573', '477', 'W', 'y', 'm', '7321', '9995', '2865', '1499', '5135', 'd']",
+    "output": [
+      "3043, 2839, 2573, 477, 7321, 9995, 2865, 1499, 5135"
+    ]
+  },
+  {
+    "id": "SuperNI-task497-d1bb2eb02d7749849340515edb593540",
+    "instruction": "In this task, you are given an input list A. You need to find all the elements of the list that are numbers in the same order as they appear in the list A.",
+    "input": "['S', 'I', '8673', 'u', 'j', '2509', 'l', 'D', '6815', 'f', '4915', '9687', '3085', '6719', '1249', '6207', '6713', '6071', 'R', 'R', '1303']",
+    "output": [
+      "8673, 2509, 6815, 4915, 9687, 3085, 6719, 1249, 6207, 6713, 6071, 1303"
+    ]
+  }
+]

@@ -1,0 +1,39 @@
+[
+  {
+        "id": "SuperNI-task291-ab63f213cfd240ce80a71eee0a329a83",
+        "input": "Drink more wine when you feel thirsty.\nDrink more water when you feel thirsty",
+        "instances": [
+        {
+            "instruction": "In this task, you are given the two instructions mentioned above. Your task is to generate a list of pros and cons for each beverage option based on its effectiveness in quenching thirst, health benefits, taste, and social acceptability. The output should be a table with four columns: \"Beverage Option,\" \"Pros,\" \"Cons,\" and \"Overall Recommendation.\"",
+            "output": "| Beverage Option | Pros | Cons | Overall Recommendation |\n|-----------------|------|------|-----------------------|\n| Wine            | - Can provide temporary relief from thirst<br>- Contains antioxidants<br>- May have social acceptability in certain settings | - Can lead to dehydration<br>- Can impair judgment and coordination<br>- Can have negative health effects in excessive amounts | Not recommended for quenching thirst due to potential negative health effects and dehydration risk |\n| Water           | - Essential for hydration<br>- Quenches thirst effectively<br>- No negative health effects<br>- Socially acceptable in all settings | None | Highly recommended for quenching thirst due to its effectiveness, health benefits, and social acceptability |",
+            "cost": 312
+        },
+        {
+            "instruction": "Write a persuasive essay arguing for one of the two options as the better choice for quenching thirst.",
+            "output": "Drink more water when you feel thirsty.",
+            "cost": 378
+        },
+        {
+            "instruction": "In this task, you are given an input phrase that contains a beverage choice and a condition. Your task is to suggest alternative beverages that could be consumed under the same condition.\n\nExample Input:\nDrink more wine when you feel thirsty.\n\nExample Output:\nDrink more juice when you feel thirsty.\n'8845': Drink more coffee when you feel thirsty.\n'11982': Drink more soda when you feel thirsty.\n'17384': Drink more tea when you feel thirsty.\n'3969': Drink more juice when you feel thirsty.\n'7272': Drink more beer when you feel thirsty.\nThe answer should be one of '17384, 8845, 11982, 7272, 3969'.",
+            "output": "3969",
+            "cost": 436
+        }
+        ]
+    },
+    {
+        "id": "SuperNI-task337-3d2480a896574f3dbd70c0d19ad3ce5c",
+        "input": "Post: She\u2019s not only a bitch but she\u2019s also a whore. She\u2019s always touching her friends boobs too which is gross",
+        "instances": [
+            {
+            "instruction": "In this task, you are given a sentence that contains derogatory language. Your task is to rewrite the sentence without using any offensive words while still conveying the same meaning. The output should be a new sentence that does not contain any profanity or derogatory language.\n(!): Post: She's not only a mean person but she's also a slut. She's always touching her friends' chests too which is disgusting.\n($): Post: She's not only mean but she's also promiscuous. She's always touching her friends' chests too which is disgusting.\n(#): Post: She's not only a mean girl but she's also a prostitute. She's always touching her friends' chests too which is disgusting.\n(?): Post: She's not only a mean bitch but she's also a slut. She's always touching her friends' breasts too which is disgusting.\nYou should only use these symbols to represent your final answer: '?, !, #, $'.",
+            "output": "$",
+            "cost": 540
+            },
+            {
+            "instruction": "In this task, you are given a sentence that contains derogatory language. Your task is to identify the target of the insult in the sentence. The output should be the noun or pronoun that is being insulted.",
+            "output": "bitch, whore",
+            "cost": 385
+            }
+        ]
+    }
+]
