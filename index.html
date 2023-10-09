@@ -350,7 +350,7 @@
 
 
 
-<!-- Method. -->
+<!-- Main Results. -->
 <div class="columns is-centered has-text-centered">
   <div class="column is-four-fifths">
     <h2 class="title is-3">Automatic Evaluation Results</h2>
@@ -364,9 +364,9 @@
                         <div class="item">
                             <!-- Your image here -->
                             <img src="static/images/main_table.png" alt="MainTable" />
-                            <!-- <h2 class="subtitle"  style="text-align:center;">
-                                Figure : TODO
-                            </h2> -->
+                            <h2 class="subtitle"  style="text-align:center;">
+                                Table 1: Main results.
+                            </h2>
                         </div>
                     </div>
                 </div>
@@ -376,12 +376,80 @@
 
 <div class="content has-text-justified">
   <p>
-    We evaluate models (T5-3B & T5-11B) trained with <span class="printerFont">MUFFIN</span> on four widely adopted zero-shot benchmarks, including SuperNI-Test, MMLU, T0-Eval and BBH.
+    We evaluate models (T5-3B & T5-11B) trained with <span class="printerFont">MUFFIN</span> on four widely adopted zero-shot benchmarks, including <i><a href="https://instructions.apps.allenai.org/">SuperNI-Test</a></i>, <i><a href="https://github.com/hendrycks/test">MMLU</a></i>, <i><a href="https://huggingface.co/datasets/bigscience/P3">T0-Eval</a></i> and <i><a href="https://github.com/suzgunmirac/BIG-Bench-Hard">BBH</a></i>. 
+    Compared with the previous LLM-generated datasets, <u>the models tuned on our <span class="printerFont">MUFFIN</span> consistently achieve
+    better performance across 3 out of 4 benchmarks, under various metrics</u>. We also find that the larger model benefits more from tuning on <span class="printerFont">MUFFIN</span> (4.42 ave. performance improvement of T5-3B ⇒
+    8.03 ave. performance improvement of T5-11B, compared with the strongest baseline). Notably, <span class="printerFont">MUFFIN</span> can gain the comparable or even better performances, compared with the models trained on huam-crafted datasets (e.g., SuperNI-Train, T0, T0++).
   </p>
 </div>
 </div>
 </div>
 
+
+
+<!-- Human Eval. -->
+<div class="columns is-centered has-text-centered">
+  <div class="column is-four-fifths">
+    <h2 class="title is-3">Human Evaluation Results</h2>
+
+      <!-- Human Eval Table 1 Overview -->
+      <section class="hero">
+        <div class="hero-body">
+            <div class="container is-max-desktop">
+                <div class="columns is-centered">
+                    <div class="column is-full">
+                        <div class="item">
+                            <!-- Your image here -->
+                            <img src="static/images/human_eval_1.jpg" alt="Human_eval_1" />
+                            <h3 class="subtitle" style="text-align:center; font-size: 16px;">
+                                Table 2: Human evaluation acceptance ratio. We randomly sample 200 instances from each benchmark
+                                and let workers evaluate different systems’ outputs.
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <div class="content has-text-justified">
+      <p>
+        Table 2 shows the human evaluation results (acceptance ratios). Compared with the strongest results among all the 8 baselines, <span class="printerFont">MUFFIN</span> mostly
+        results in better human acceptance ratios with large margins (except for the tiny lower result on
+        T0-Eval).
+      </p>
+    </div>
+
+    <!-- Human Eval Table 2 Overview -->
+    <section class="hero">
+      <div class="hero-body">
+          <div class="container is-max-desktop">
+              <div class="columns is-centered">
+                  <div class="column is-full">
+                      <div class="item">
+                          <!-- Your image here -->
+                          <img src="static/images/human_eval_2.jpg" alt="Human_eval_2" />
+                          <h3 class="subtitle" style="text-align:center; font-size: 16px;">
+                              Table 3: Pair-wise comparison between <span class="printerFont">MUFFIN</span> (Ours) and three strong baselines, namely Self-Instruction (Self-Inst.), Unnatural Instruction (Unnatural), and SuperNI, across four benchmarks.
+                          </h3>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </section>
+
+
+  <div class="content has-text-justified">
+    <p>
+      Table 3 shows the pair-wise comparison results between <span class="printerFont">MUFFIN</span> and other three baselines. Compared with the LLM-generated datasets (<a href="https://github.com/yizhongw/self-instruct/tree/main">Self-Instruction</a> and <a href="https://github.com/orhonovich/unnatural-instructions">Unnatural Instruction</a>), our <span class="printerFont">MUFFIN</span>
+      consistently gains higher human preferences across four benchmarks, aligning with the previous conclusion. Notebly, owing to the diverse tasks and our novel paradigm, <span class="printerFont">MUFFIN</span> can even surpass the high-quality human-crafted SuperNI on three out of four benchmarks.
+    </p>
+  </div>
+
+</div>
+</div>
 
 
 
