@@ -16,7 +16,7 @@ from tenacity import (
     wait_random_exponential,
 )  # for exponential backoff
 
-from prompt_templates import ConversationPromptTask_CLS
+from prompt_templates import ConversationPromptTask_CLS, ConversationPromptTask_CLS_2
 from chat_completion import openai_chat_completion
 
 
@@ -47,8 +47,8 @@ def main():
     parser.add_argument("--save_file", type=str,
                         default='add_generated_instructions.json')
     parser.add_argument("--seed", type=int, default=42)
-    # parser.add_argument("--template", type=int, 
-    #                     default=1, help="choice value indicating different templates.")
+    parser.add_argument("--template", type=int, 
+                        default=1, help="choice value indicating different templates.")
     parser.add_argument("--overwrite", action="store_true", help="overwrite the save file if it exists.")
     parser.add_argument("--instance_num", type=int, default=None, help="number of instances (input) to annotate.")
     parser.add_argument("--demo_instructions", type=str, default="/scratch/rml6079/project/Tk-Instruct/data/only_CLS/demon_instructions.json",
@@ -66,17 +66,12 @@ def main():
     if os.path.exists(args.save_file) and not args.overwrite:
         raise ValueError("Save file {} already exists, set --overwrite to overwrite it.".format(args.save_file))
     
-    # if args.template == 1:
-    #     template = ConversationPromptTask() # following hints
-    # elif args.template == 2:
-    #     template = ConversationPromptTask_2() # shifting attributes
-    # elif args.template == 3:
-    #     template = ConversationPromptTask_3() # following hints, w/ 3-shot demonstrations
-    # elif args.template == 4:
-    #     template = ConversationPromptTask_4() # shifting attributes, w/ 3-shot demonstrations
-    # else:
-    #     raise ValueError("template value must be 1, 2, 3, or 4.")
-    template = ConversationPromptTask_CLS() 
+    if args.template == 1:
+        template = ConversationPromptTask_CLS()  
+    elif args.template == 2:
+        template = ConversationPromptTask_CLS_2()
+    else:
+        raise ValueError("template value must be 1, 2")
     
     decoding_args = OpenAIDecodingArguments()
 

@@ -4,9 +4,11 @@ import copy
 import json
 import os
 import random
+import sys
 import openai
 import dataclasses
 import logging
+import tenacity
 import tiktoken
 from tqdm import tqdm
 from typing import Optional, Sequence, Union, List
@@ -16,7 +18,7 @@ from tenacity import (
     wait_random_exponential,
 )  # for exponential backoff
 
-from prompt_templates import ConversationPrompt, ConversationPromptTask, ConversationPromptTask_2, ConversationPromptTask_3, ConversationPromptTask_4
+from prompt_templates import ConversationPrompt, ConversationPromptTask, ConversationPromptTask_2, ConversationPromptTask_3, ConversationPromptTask_4, ConversationPromptTask_5, ConversationPromptTask_6
 from chat_completion import openai_chat_completion
 
 
@@ -33,6 +35,14 @@ class OpenAIDecodingArguments(object):
     # stop: Optional[List[str]] = dataclasses.field(default_factory=default_stop)
     presence_penalty: float = 1.99
     frequency_penalty: float = 0.0
+
+def save_intermediate_results(all_items, args, message):
+    file_name = os.path.basename(args.save_file)
+    file_name = file_name.rsplit(".", 1)[0] + f".{message}.json"
+    terminate_save_path = os.path.join(args.path, "terminated_results")
+    os.makedirs(terminate_save_path, exist_ok=True)
+    with open(os.path.join(terminate_save_path, file_name), "w") as f:
+        json.dump(all_items, f, indent=2)
 
 
 def main():
@@ -71,9 +81,13 @@ def main():
     elif args.template == 2:
         template = ConversationPromptTask_2() # shifting attributes
     elif args.template == 3:
-        template = ConversationPromptTask_3() # following hints, w/ 3-shot demonstrations
+        template = ConversationPromptTask_3() # following hints, w/o 3-shot demonstrations (short)
     elif args.template == 4:
-        template = ConversationPromptTask_4() # shifting attributes, w/ 3-shot demonstrations
+        template = ConversationPromptTask_4() # shifting attributes, w/o 3-shot demonstrations (short)
+    elif args.template == 5:
+        template = ConversationPromptTask_5() # following hints, w/ 3-shot demonstrations
+    elif args.template == 6:
+        template = ConversationPromptTask_6() # shifting attributes, w/ 3-shot demonstrations
     else:
         raise ValueError("template value must be 1, 2, 3, or 4.")
     
@@ -104,17 +118,31 @@ def main():
             # construct instance into a new dict that can be fiiled into the template
             all_instances.append({"id": id + f"-hint{idx}", "input": x, "hint": att, 
                                   "cost": cost, "example_1": demos[0], "example_2": demos[1], "example_3": demos[2]})
-            
-    outputs, skip_num = [], 0
-    for i, instance in tqdm(enumerate(all_instances), total=len(all_instances)):
-        content, cost = openai_chat_completion(instance, template, decoding_args, model_name=args.api_name)
-        if content is None:
-            skip_num += 1
-            continue
-        instance.update({"instructions": content})
-        instance["cost"] += cost
-        outputs.append(instance)
-
+    
+    try:        
+        outputs, skip_num = [], 0
+        for i, instance in tqdm(enumerate(all_instances), total=len(all_instances)):
+            content, cost = openai_chat_completion(instance, template, decoding_args, model_name=args.api_name)
+            if content is None:
+                skip_num += 1
+                continue
+            instance.update({"instructions": content})
+            instance["cost"] += cost
+            outputs.append(instance)
+    except KeyboardInterrupt as e:
+        # save the intermediate results
+        print("==> Error: {}".format(e))
+        print("\nUser terminated the program\n")
+        save_intermediate_results(outputs, args, "KeyboardInterrupt")
+        sys.exit(0)  # Exit the program gracefully
+    # except openai.error.RateLimitError as e:
+    except tenacity.RetryError as e:
+        print("==> Error: {}".format(e))
+        print("\nOpenAI API rate limit reached. Please increase the waiting/retry times in the tenacity decorator.\n")
+        save_intermediate_results(outputs, args, "RateLimitError")
+        sys.exit(0)  # Exit the program gracefully
+    
+    
     # write the output files
     # save_file = args.data_file.replace("_attributes.json", "_instructions.json")
     save_file = args.save_file

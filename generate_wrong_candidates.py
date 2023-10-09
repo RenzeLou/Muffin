@@ -5,9 +5,11 @@ import json
 import os
 import random
 import string
+import sys
 import openai
 import dataclasses
 import logging
+import tenacity
 import tiktoken
 from tqdm import tqdm
 from typing import Optional, Sequence, Union, List
@@ -34,7 +36,15 @@ class OpenAIDecodingArguments(object):
     # stop: Optional[List[str]] = dataclasses.field(default_factory=default_stop)
     presence_penalty: float = 0.0
     frequency_penalty: float = 0.0
-    
+
+def save_intermediate_results(all_items, args, message):
+    file_name = os.path.basename(args.save_file)
+    file_name = file_name.rsplit(".", 1)[0] + f".{message}.json"
+    terminate_save_path = os.path.join(args.path, "terminated_results")
+    os.makedirs(terminate_save_path, exist_ok=True)
+    with open(os.path.join(terminate_save_path, file_name), "w") as f:
+        json.dump(all_items, f, indent=2)
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -72,35 +82,49 @@ def main():
     
     source_datas = random.sample(source_datas, min(args.instance_num, len(source_datas))) if args.instance_num is not None else source_datas 
     
-    # process the source files
-    target_datas, skip_num, complete_num = [], 0, 0
-    for source_data in tqdm(source_datas, total=len(source_datas)):
-        instances = source_data["instances"]
-        id, input, all_cost = source_data["id"], source_data["input"], source_data["cost"]
-        new_instances = []
-        for idx, ins in enumerate(instances):
-            # instruction, output, cost = ins["instruction"], ins["output"], ins["cost"]
-            if args.length_threshold is not None and len(ins["output"].split()) > args.length_threshold:
-                # if this task requires long generations, we don't anticipate it can be constructed into classifcation tasks
-                ins["wrong_outputs"] = []
-                cost = 0
-                skip_num += 1
-            else:
-                input_value = copy.deepcopy(ins)
-                input_value["input"] = input
-                content, cost = openai_chat_completion(input_value, template, decoding_args, model_name=args.api_name)
-                if content is None:
+    try:
+        # process the source files
+        target_datas, skip_num, complete_num = [], 0, 0
+        for source_data in tqdm(source_datas, total=len(source_datas)):
+            instances = source_data["instances"]
+            id, input, all_cost = source_data["id"], source_data["input"], source_data["cost"]
+            new_instances = []
+            for idx, ins in enumerate(instances):
+                # instruction, output, cost = ins["instruction"], ins["output"], ins["cost"]
+                if args.length_threshold is not None and len(ins["output"].split()) > args.length_threshold:
+                    # if this task requires long generations, we don't anticipate it can be constructed into classifcation tasks
+                    ins["wrong_outputs"] = []
+                    cost = 0
                     skip_num += 1
-                    continue
-                ins["wrong_outputs"] = content
-                ins["cost"] += cost
-                complete_num += 1
-            new_instances.append(ins)
-            all_cost += cost
+                else:
+                    input_value = copy.deepcopy(ins)
+                    input_value["input"] = input
+                    content, cost = openai_chat_completion(input_value, template, decoding_args, model_name=args.api_name)
+                    if content is None:
+                        skip_num += 1
+                        continue
+                    ins["wrong_outputs"] = content
+                    ins["cost"] += cost
+                    complete_num += 1
+                new_instances.append(ins)
+                all_cost += cost
+                
+            source_data["instances"] = new_instances
+            source_data["cost"] = all_cost
+            target_datas.append(source_data)
+    except KeyboardInterrupt as e:
+        # save the intermediate results
+        print("==> Error: {}".format(e))
+        print("\nUser terminated the program\n")
+        save_intermediate_results(target_datas, args, "KeyboardInterrupt")
+        sys.exit(0)  # Exit the program gracefully
+    # except openai.error.RateLimitError as e:
+    except tenacity.RetryError as e:
+        print("==> Error: {}".format(e))
+        print("\nOpenAI API rate limit reached. Please increase the waiting/retry times in the tenacity decorator.\n")
+        save_intermediate_results(target_datas, args, "RateLimitError")
+        sys.exit(0)  # Exit the program gracefully
             
-        source_data["instances"] = new_instances
-        source_data["cost"] = all_cost
-        target_datas.append(source_data)
             
     # write the output files
     save_file = args.save_file
