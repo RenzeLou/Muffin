@@ -134,5 +134,8 @@ dmypy.json
 .pyre/
 
 cache/
-data/
 .vscode/
+
+# ignore dummy data
+data/*
+!data/muffin_dummy.json
