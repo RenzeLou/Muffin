@@ -51,7 +51,7 @@ def main():
                         default=1, help="choice value indicating different templates.")
     parser.add_argument("--overwrite", action="store_true", help="overwrite the save file if it exists.")
     parser.add_argument("--instance_num", type=int, default=None, help="number of instances (input) to annotate.")
-    parser.add_argument("--demo_instructions", type=str, default="/scratch/rml6079/project/Tk-Instruct/data/only_CLS/demon_instructions.json",
+    parser.add_argument("--demo_instructions", type=str, default="./data/only_CLS/demon_instructions.json",
                         help="path to the demonstration instructions (cls tasks).")
 
     args, unparsed = parser.parse_known_args()

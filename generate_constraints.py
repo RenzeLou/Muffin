@@ -88,7 +88,7 @@ def main():
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--overwrite", action="store_true", help="overwrite the save file if it exists.")
     parser.add_argument("--instance_num", type=int, default=None, help="number of instances (input) to annotate.")
-    parser.add_argument("--demo_instructions", type=str, default="/scratch/rml6079/project/Tk-Instruct/data/valid_x/constraints_few_manual.json",
+    parser.add_argument("--demo_instructions", type=str, default="./data/valid_x/constraints_few_manual.json",
                         help="path to the demonstration instructions w/ constraints.")
 
     args, unparsed = parser.parse_known_args()

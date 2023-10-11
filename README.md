@@ -1,161 +1,120 @@
-### prompt template
-the prompt template can be found in `prompt_templates.py`
-the querying procedure can be found in `chat_completion.py` (shared by `generate_attributes.py`, `generate_instructions.py`, `generate_answers.py`, and so on)
 
-### source data collection
-`collect_instruction_data.py` is used to load and reorganize the data, currently only support the SuperNI dataset.
+This repository contains the source code for reproducing the data curation of [MUFFIN]() (Multi-faceted Instructions).
 
-### instance (input, instructions, outputs) generation
-run `python generate_attributes.py --api_key xxx` to generate the attributes.
-run `python generate_instructions.py --api_key xxx` to generate the instructions based on the attributes.
-run `python generate_constraints.py` to add additional constraints to the instructions. (optional)
-run `python generate_answers.py` to annotate the answers based on the (input, instruction, constraint).
 
-### filtering 
-use `python post_process/filtering.py` to filter the data. The resulting data will be saved as f`filtered_{instance_num}.json`
+<!-- We follow a novel Scale Instruction per Input. -->
 
-### classification expansion
-use `python generate_wrong_candidates.py` to generate more wrong output candidates for each task. Then, use `python post_process/classification_expansion.py` to construct more classification instances by combining the wrong candidates with correct outputs. 
+## 📚 Data Release
 
-## About API
-use `gpt-3.5-turbo-0301` for `generate_attributes.py`, `generate_instructions.py`.
-use `gpt-3.5-turbo-0613` for `generate_constraints.py`, `generate_answers.py`, `generate_wrong_candidates.py`.
+## 🤖 Model Release
 
-## TODO:
 
-```bash
-python generate_attributes.py --path ./data/SuperNI_v8 --data_file part_1.json --save_file part_1.add_attributes.json --api_name gpt-3.5-turbo-0301 --template 2
-python generate_instructions.py --path ./data/SuperNI_v8 --data_file part_1.add_attributes.json --save_file part_1.add_generated_instructions_5.json --template 5 --api_name gpt-3.5-turbo-0301
-python generate_instructions.py --path ./data/SuperNI_v8 --data_file part_1.add_attributes.json --save_file part_1.add_generated_instructions_6.json --template 6 --api_name gpt-3.5-turbo-0301
-python generate_answers.py --path ./data/SuperNI_v8 --data_files part_1.add_generated_instructions_5.json,part_1.add_generated_instructions_6.json --save_file part_1.add_answers_full.json --api_name gpt-3.5-turbo-0613
-python post_process/filtering.py --path ./data/SuperNI_v8 --data_files part_1.add_answers_full.json --save_file part_1.filtered_full.json
-python generate_wrong_candidates.py --api_name gpt-3.5-turbo-0613 --path ./data/SuperNI_v8 --data_files part_1.filtered_full.json --save_file part_1.add_classification_candidates.json --length_threshold 100
-python post_process/classification_expansion.py --path ./data/SuperNI_v8 --data_files part_1.add_classification_candidates.json --save_file part_1.mix_cls.json --cls_num 1 --add_constraints
-```
+## 🦾 Data Curation
+
+<p align="center" width="100%">
+<a ><img src="./figures/data_collection.png" alt="data_collection" style="width: 90%; min-width: 300px; display: block; margin: auto;"></a>
+</p>
+
+As shown in the above illustration, in this work, we mainly adopt two different instruction collection methods: 
+
+- **Instruction Brainstorm**: Let LLMs generate instructions based on the input (and its facets).
+- **Instruction Rematching**: Reusing existing human-crafted instructions on the input, evaluated by LLMs.
+
+#### Project Structure
 
 ```bash
-python generate_attributes.py
-python generate_instructions_CLS.py --path ./data/SuperNI_v4 --data_file add_attributes.json --save_file add_generated_instructions_cls.json --api_name gpt-3.5-turbo-0301 --overwrite
-python generate_answers.py --path ./data/SuperNI_v4 --data_files add_generated_instructions_cls.json --save_file add_answers_cls.json --api_name gpt-3.5-turbo-0613 --overwrite
-python post_process/filtering.py
-python mix_additional_cls_data.py ("remember to change the path")
 ```
 
 
+#### Input Collection
+
+First, we have to collect the input texts. In our paper, we use two distinct input sources to promote data diversity, namely the inputs from [Super-Natural Instructions](https://instructions.apps.allenai.org/) (the training set) and [Dolma](https://huggingface.co/datasets/allenai/dolma). 
+
+Please follow their official documents downloading the above data. And then, process them into an apprpriate json format. For example, for an instance in SuperNI, the final json format should be like below (please refer to the `data/input_text_dummy.json` for more details):
+
+```json
+{
+    "id": "SuperNI-task291-ab63f213cfd240ce80a71eee0a329a83",
+    "instruction": "In this task, you are given two natural language statements with similar wording. You must choose the statement that makes less sense based on common sense knowledge. A '\n' separates the statements. Use \"first\" or \"second\" to indicate which sentence makes less sense.",
+    "input": "Drink more wine when you feel thirsty.\nDrink more water when you feel thirsty",
+    "output": [
+      "first"
+    ]
+}
+```
+
+The most important field of this json object is the `input`. As for the other fields, you can simply fill them with dummy values (such as `None`).
+
+Due to the complex file structure of SuperNI and the extreme large size of Dolma, we don't provide the detailed preprocessing scripts. 
+
+However, feel free to use any other text sources (e.g., multi-task datasets or pretraining corpus). We anticipate that any free-form text corpus can be used in our pipeline. Only to make sure that the input texts are in the json format as above.
+
+#### Instruction Brainstorm
+
+We adopt two-step instruction generation: 1) ask LLMs (ChatGPT) to recognize various facets (aka attribute) of the given input; 2) using the recognized facets as **hints**, ask LLMs (ChatGPT) to generate instructions. 
+
+Run the following command to generate brainstormed instructions:
+
 ```bash
-python classify_cls_instruction_validation.py --path ./data/SuperNI_v4 --data_file original_collection.json --save_file classified_superni_cls_instructions.json --api_name gpt-3.5-turbo-0613 --overwrite
-python generate_answers.py --path ./data/SuperNI_v4 --data_files classified_superni_cls_instructions.json  --save_file add_answers_superni_cls_instructions.json --api_name gpt-3.5-turbo-0613 --cancel_filter --overwrite --no_hint_id --api_key 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  # (our group's api key)
+sh scripts/instruction_brainstorm.sh [args_1] [args_2]  # args_1: json file containing input texts (e.g., input_text_dummy.json); args_2: your API key for OpenAI API
+```
+
+The generated brainstormed instructions will be saved at `data/brainstorm_1.json`.
+
+Feel free to modify the shell script to try with other API models. 
+
+#### Instruction Rematching
+
+We collect existing high-quality human instructions (from SuperNI) and let LLMs (GPT-4 in this case) to evaluate each instruction on the given input (*can the given input and instruction form a valid task?*).
+
+Please first prepare the (instruction, input) candiate pairs, which should be in the following json format (please refer to the `data/rematch_candidate_dummy.json` for more details):
+
+```json
+{
+  "id": "SuperNI-task291-ab63f213cfd240ce80a71eee0a329a83-0",
+  "instruction": "Given a scientific question and its correct answer, generate supporting facts for the answer. This supporting fact can be an explanation for the answer to the given question.",
+  "input": "Drink more wine when you feel thirsty.\nDrink more water when you feel thirsty",
+  "output": [],
+  "judge": "Unknown"
+}
+```
+
+Where the `judge` field is the judgement label to decide whether the given instruction is valid for the given input, **it's value should be set as "Unknown"** (that will be further evaluated by LLMs as "yes" or "no").
+
+Similarly, besides SuperNI, feel free to use candidate pairs with any other human instructions and input texts. 
+
+
+Then, run the following command to collect the rematched instructions:
+
+```bash
+sh scripts/instruction_remataching.sh [args_1] [args_2]  # args_1: json file containing candidate pairs (e.g., rematch_candidate_dummy.json); args_2: your API key for OpenAI API
+```
+
+The generated rematched instructions will be saved at `data/rematched.json`.
+
+
+#### Data Merging
+
+Finally, we merge the brainstormed instructions and rematched instructions into a single json file. 
+
+```bash
+python post_process/mix_rematched_brainstorm_same_x.py --brainstorm_data ./data/brainstorm_1.json --remathced_data ./data/rematched.json --mix_save_path ./data --mix_save_file muffin_final_data.json
+```
+
+The final data will be saved at `data/muffin_final_data.json`.
+
+
+## 🥳 Citation
+
+Please kindly cite our paper if you use any resources in this repository:
+
+```
 ```
 
 
-### rematch superni
+---
 
-```bash
-python data/split_ori_collection_2.py --annotate_instruction_num 100 --overwrite  # split the classification procedure (judge whether the instruction and the given input are matched) into two parts, one part use openai and another part use local model)
+<!-- omit in toc -->
+## ⭐ Star History
 
-python classify_instruction_validation.py --api_name gpt-4-0613 --path ./data/SuperNI_v6 --data_file superni_rematched_waited_classify.gpt.json --save_file superni_rematched.gpt.json --overwrite # (the first half,gpt-annotated part)
-
-# python classify_instruction_validation.py --api_name gpt-4-0613 --path ./data/SuperNI_v6 --data_file superni_rematched_waited_classify.local.json --save_file superni_rematched.local.json --overwrite # (the second half, or local-model-annotated part)
-```
-
-after using gpt-4 annotate all these subset of instruction (100/756), train a local model (flan-t5) to annotate the rest of the instructions
-
-```bash
-cd /scratch/rml6079/project/Instruct_dataset_training_code
-
-# training 
-sh scripts/classify_applicable.sh 7 6 google/flan-t5-xl SuperNI_v7/t5_superni_rematched.gpt.json SuperNI_v7/t5_dev_superni_rematched.gpt.json SuperNI_v7/t5_test_superni_rematched_waited_classify.local.json out_classify_applicable 5050  # have fixed the hyperparameters, use `classify_applicable_tune_basic_hyper.sh` to decide hyperparameters at first
-# testing 
-sh scripts/classify_applicable_predict.sh 7 36 flan-t5-xl_3e-05_10_5050 SuperNI_v7/t5_test_superni_rematched_waited_classify.local.json 0.2
-```
-
-then process the local model's prediction, use GPT to do the 2nd round annotation
-
-```bash
-# process the local model's prediction, randomly select 45% of the data to annotate (10k)
-python data/process_local_model_results.py --save_path ./data/SuperNI_v7/round_2 --margin 0.5 --random_ratio 0.45 --overwrite
-
-# 2nd round annotation
-python classify_instruction_validation.py --api_name gpt-4-0613 --path ./data/SuperNI_v7/round_2 --data_file superni_rematched_waited_classify.gpt.json --save_file superni_rematched.gpt.json
-```
-
-then do the same things like before: use all the current gpt-annotated data to train a stronger local small model, and do prediction on the rest of the data, and 3rd round annotation
-
-```bash
-# 3rd round annotation
-python data/process_local_model_results.py --model_predict_file /scratch/rml6079/project/Instruct_dataset_training_code/out_classify_applicable/flan-t5-xl_3e-05_10_13495/predict_classify_answers.json --save_path ./data/SuperNI_v7/round_3 --margin 0.2 --random_ratio 0.75 --overwrite
-python classify_instruction_validation.py --api_name gpt-4-0613 --path ./data/SuperNI_v7/round_3 --data_file superni_rematched_waited_classify.gpt.json --save_file superni_rematched.gpt.json
-```
-
-```bash
-# 4th round annotation
-python data/process_local_model_results.py --model_predict_file /scratch/rml6079/project/Instruct_dataset_training_code/out_classify_applicable/flan-t5-xl_3e-05_5_21793/predict_classify_answers.json --save_path ./data/SuperNI_v7/round_4 --margin 0.0 --random_ratio 1 --overwrite
-python classify_instruction_validation.py --api_name gpt-4-0613 --path ./data/SuperNI_v7/round_4 --data_file superni_rematched_waited_classify.gpt.json --save_file superni_rematched.gpt.json
-```
-
-
-```bash
-# merge all-round gpt-annotated data together, reformat them to train T5
-python data/merge_gpt4_annotation_all_round.py --source_path ./data/SuperNI_v7 --source_files superni_rematched.gpt.json round_2/superni_rematched.gpt.json --save_path ./data/SuperNI_v7/round_2 --save_file superni_rematched.gpt.json --format_process --local_file superni_rematched_waited_classify.local.json --neg_num 7000  --overwrite
-python data/merge_gpt4_annotation_all_round.py --source_path ./data/SuperNI_v7 --source_files superni_rematched.gpt.json round_2/superni_rematched.gpt.json round_3/superni_rematched.gpt.json --save_path ./data/SuperNI_v7/round_3 --save_file superni_rematched.gpt.json --format_process --local_file superni_rematched_waited_classify.local.json --neg_num 11000 --overwrite
-```
-
-finally, after getting all the GPT-anntated samples, collect those pos samples and format data file, and annotate y
-
-```bash
-# gather all-round gpt-annotated data together, reformat them
-python data/process_rematched_results.py
-
-python generate_answers_on_rematched.py --api_name gpt-3.5-turbo-0613 --path ./data/SuperNI_v7 --data_files rematched.round_1.waited_annotate_y.json --save_file rematched.round_1.add_answers.json --overwrite --cancel_filter --api_key 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
-
-python post_process/filtering_rematch.py --path ./data/SuperNI_v7 --data_files rematched.round_1.add_answers.json --save_file rematched.round_1.filtered.json
-```
-
-
-**below procedures are optional**. Since 100/756 is also expensive, and it constantly faces with openai api error. So we split the 100/756 into 5 parts **again**, use different group accounts to annotate the instructions. Then, merge the all these small pieces of annotations into one file.
-
-```bash
-python data/split_gpt4_annotation.py  # due to so poor, split this subset again... use different group accounts to annotate the instructions
-python classify_instruction_validation.py --api_name gpt-4-0613 --path ./data/SuperNI_v7/split_data_dueto_poor --data_file split_3_superni_rematched_waited_classify.gpt.json --save_file split_3_superni_rematched.gpt.json --api_key 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
-python data/merge_gpt4_annotation.py --overwrite --format_process  # merge the annotations from different group accounts
-```
-
-
-### merge rematched & brainstorm data
-
-after finishing annotating both rematched data and brainstorm data, we can merge them together. there are two ways:
-
-#### 1. merge according to the same input (recommend)
-
-following code will use rematched data as the base, and finding those instructions from brainstorm data that share the same input with rematched data, and merge those same-x instructions together.
-
-(if there is no sahred x, then the final file is the same as rematched data)
-
-```bash
-python data/mix_rematched_brainstorm_same_x.py --brainstorm_data ./data/SuperNI_v7/mix_cls_long_1.json --remathced_data ./data/SuperNI_v7/rematched.round_1_2_3_4.filtered_chatgpt.json --mix_save_path ./data/SuperNI_v7 --mix_save_file mix_v2.remacthed_brainstorm.long.json
-```
-
-then after scaling (use the input text from dolma), merge the above same_x_mix data with the new brainstorm data
-
-```bash
-python data/mix_rematched_brainstorm_more_data.py # as for the args, see the file, should be changed accordinglly (incrementallt scale up)
-```
-
-#### 2. simply combine
-
-while the following code just simply combine these two data, you can also set `--instance_num` to decie how many brainstorm data is added into rematch data
-
-```bash
-cd data
-python mix_rematched_brainstorm.py  # mod the args in this file
-```
-
-----------------------------------------------------------------------------------------
-
-# about scaling up -- adding more input x
-
-use the following scripts to process and collect free-form text (x) from dolma:
-
-```bash
-python pre_process/process_dolma.py --select_num 3500 --length_diversity --num_per_part 750
-```
+[![Star History Chart](https://api.star-history.com/svg?repos=RenzeLou/Muffin&type=Date)](https://star-history.com/#RenzeLou/Muffin&Date)

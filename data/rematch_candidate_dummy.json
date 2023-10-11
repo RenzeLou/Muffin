@@ -1,0 +1,23 @@
+ [ 
+  {
+    "id": "SuperNI-task291-ab63f213cfd240ce80a71eee0a329a83-0",
+    "instruction": "Given a scientific question and its correct answer, generate supporting facts for the answer. This supporting fact can be an explanation for the answer to the given question.",
+    "input": "Drink more wine when you feel thirsty.\nDrink more water when you feel thirsty",
+    "output": [],
+    "judge": "Unknown"
+  },
+  {
+    "id": "SuperNI-task291-ab63f213cfd240ce80a71eee0a329a83-1",
+    "instruction": "In this task, you will be given a passage, a question and a list of single-word events identified from the passage. The goal is to point out all events from the given event list that can answer the question. If a question is unanswerable or none of the events answer the question, output should be empty.",
+    "input": "Drink more wine when you feel thirsty.\nDrink more water when you feel thirsty",
+    "output": [],
+    "judge": "Unknown"
+  },
+  {
+    "id": "SuperNI-task291-ab63f213cfd240ce80a71eee0a329a83-2",
+    "instruction": "Evaluate the similarity between them and classify them into classes from 0-5 as follows:\n0 : The two sentences are completely dissimilar.\n1 : The two sentences are not equivalent, but are on the same topic.\n2 : The two sentences are not equivalent, but share some details.\n3 : The two sentences are roughly equivalent, but some important information differs/missing.\n4 : The two sentences are mostly equivalent, but some unimportant details differ.\n5 : The two sentences are completely equivalent, as they mean the same thing.",
+    "input": "Drink more wine when you feel thirsty.\nDrink more water when you feel thirsty",
+    "output": [],
+    "judge": "Unknown"
+  }
+]

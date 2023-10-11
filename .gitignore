@@ -139,3 +139,5 @@ cache/
 data/*
 !data/muffin_dummy.json
 !data/input_text_dummy.json
+!data/rematch_candidate_dummy.json
+!data/demon_instructions.json
