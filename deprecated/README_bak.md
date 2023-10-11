@@ -44,7 +44,7 @@ python mix_additional_cls_data.py ("remember to change the path")
 
 ```bash
 python classify_cls_instruction_validation.py --path ./data/SuperNI_v4 --data_file original_collection.json --save_file classified_superni_cls_instructions.json --api_name gpt-3.5-turbo-0613 --overwrite
-python generate_answers.py --path ./data/SuperNI_v4 --data_files classified_superni_cls_instructions.json  --save_file add_answers_superni_cls_instructions.json --api_name gpt-3.5-turbo-0613 --cancel_filter --overwrite --no_hint_id --api_key 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  # (our group's api key)
+python generate_answers.py --path ./data/SuperNI_v4 --data_files classified_superni_cls_instructions.json  --save_file add_answers_superni_cls_instructions.json --api_name gpt-3.5-turbo-0613 --cancel_filter --overwrite --no_hint_id --api_key xxx  # (our group's api key)
 ```
 
 
@@ -106,7 +106,7 @@ finally, after getting all the GPT-anntated samples, collect those pos samples a
 # gather all-round gpt-annotated data together, reformat them
 python data/process_rematched_results.py
 
-python generate_answers_on_rematched.py --api_name gpt-3.5-turbo-0613 --path ./data/SuperNI_v7 --data_files rematched.round_1.waited_annotate_y.json --save_file rematched.round_1.add_answers.json --overwrite --cancel_filter --api_key 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
+python generate_answers_on_rematched.py --api_name gpt-3.5-turbo-0613 --path ./data/SuperNI_v7 --data_files rematched.round_1.waited_annotate_y.json --save_file rematched.round_1.add_answers.json --overwrite --cancel_filter --api_key xxx
 
 python post_process/filtering_rematch.py --path ./data/SuperNI_v7 --data_files rematched.round_1.add_answers.json --save_file rematched.round_1.filtered.json
 ```
@@ -116,7 +116,7 @@ python post_process/filtering_rematch.py --path ./data/SuperNI_v7 --data_files r
 
 ```bash
 python data/split_gpt4_annotation.py  # due to so poor, split this subset again... use different group accounts to annotate the instructions
-python classify_instruction_validation.py --api_name gpt-4-0613 --path ./data/SuperNI_v7/split_data_dueto_poor --data_file split_3_superni_rematched_waited_classify.gpt.json --save_file split_3_superni_rematched.gpt.json --api_key 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
+python classify_instruction_validation.py --api_name gpt-4-0613 --path ./data/SuperNI_v7/split_data_dueto_poor --data_file split_3_superni_rematched_waited_classify.gpt.json --save_file split_3_superni_rematched.gpt.json --api_key xxx
 python data/merge_gpt4_annotation.py --overwrite --format_process  # merge the annotations from different group accounts
 ```
 
