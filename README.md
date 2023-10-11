@@ -45,9 +45,13 @@ Please follow their official documents downloading the above data. And then, pro
 
 The most important field of this json object is the `input`. As for the other fields, you can simply fill them with dummy values (such as `None`).
 
-Due to the complex file structure of SuperNI and the extreme large size of Dolma, we don't provide the detailed preprocessing scripts. 
+> **Note**
+>
+> Due to the complex file structure of SuperNI and the extreme large size of Dolma, we don't provide the detailed preprocessing scripts. 
+> 
+> However, feel free to use any other text sources (e.g., multi-task datasets or pretraining corpus). We anticipate that any free-form text corpus can be used in our pipeline. Only to make sure that the input texts are in the json format as above. 😊😊😊
 
-However, feel free to use any other text sources (e.g., multi-task datasets or pretraining corpus). We anticipate that any free-form text corpus can be used in our pipeline. Only to make sure that the input texts are in the json format as above.
+
 
 #### Instruction Brainstorm
 
@@ -81,7 +85,10 @@ Please first prepare the (instruction, input) candiate pairs, which should be in
 
 Where the `judge` field is the judgement label to decide whether the given instruction is valid for the given input, **it's value should be set as "Unknown"** (that will be further evaluated by LLMs as "yes" or "no").
 
-Similarly, besides SuperNI, feel free to use candidate pairs with any other human instructions and input texts. 
+
+> **Note**
+> Similarly, besides SuperNI, feel free to use candidate pairs with any other human instructions and input texts. 
+
 
 
 Then, run the following command to collect the rematched instructions:
