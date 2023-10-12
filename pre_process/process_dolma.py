@@ -1,3 +1,7 @@
+'''
+use this script for sampling input texts from Dolma
+'''
+
 import argparse
 import json
 import math

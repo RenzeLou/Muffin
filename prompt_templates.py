@@ -45,7 +45,7 @@ class ConversationPrompt(object):
         return items
     
 
-# used for generating textual attributes 
+# used for generating textual facets (attributes) 
 class ConversationPromptAttribute(ConversationPrompt):
     def __init__(self):
         super().__init__()

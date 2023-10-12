@@ -1,0 +1,10 @@
+torch==1.13.0
+torchvision==0.14.0
+transformers==4.18.0
+openai==0.27.2
+tenacity==8.2.2
+tiktoken==0.3.3
+numpy==1.24.2
+tqdm
+nltk
+rouge_score

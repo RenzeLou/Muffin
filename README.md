@@ -1,12 +1,54 @@
 
-This repository contains the source code for reproducing the data curation of [MUFFIN]() (Multi-faceted Instructions).
+<h1 align="center"> <img src="./figures/cupcake.png" width="32" height="32"> MUFFIN </h1>
+
+<p align="center">
+<a href="https://renzelou.github.io/Muffin/"><img src="https://img.shields.io/badge/Website-red" alt="website" /></a>
+  <a href="https://github.com/RenzeLou/Muffin/blob/master/LICENSE"><img src="https://img.shields.io/badge/LICENSE-MIT-blue" alt="license" /></a>
+  <!-- <a href="https://github.com/RenzeLou/Muffin"><img src="https://img.shields.io/badge/Python-3.8-green" alt="python" /></a> -->
+</p>
+
+This repository contains the source code for reproducing the data curation of <img src="./figures/cupcake.png" width="20" height="20"> **[MUFFIN]()** (Multi-faceted Instructions).
 
 
-<!-- We follow a novel Scale Instruction per Input. -->
+<p align="center" width="100%">
+<a ><img src="./figures/paradigms.png" alt="paradigm" style="width: 90%; min-width: 300px; display: block; margin: auto;"></a>
+</p>
+
+As shown in the figure (c) above, we follow a novel <u>**Scaling Tasks per Input**</u> paradigm to collect **multiple** task instructions for a **single** input.
+
+
+**Project Structure:**
+
+```
+-- data          # data folder, including the dummy data
+
+-- pre_process   # pre-processing scripts, including the input text collection.
+
+-- post_process  # post-processing scripts, including filtering, classification expansion, etc.
+
+-- scripts  
+|  -- instruction_brainstorm.sh   # shell script for instruction brainstorm
+|  -- instruction_remataching.sh  # shell script for instruction rematching
+
+-- chat_completion.py   # used for querying OpenAI API, shared by all the other scripts
+
+-- prompt_templates.py  # contains all the prompt templates used in this work
+
+-- generate_*.py        # all the scripts starting with "generate_" are used for data generation (e.g., facets and instruction generation)
+```
 
 ## 📚 Data Release
 
+`data/muffin_dummy.json` contains some dummy instances of MUFFIN. We release our full dataset on the HuggingFace 🤗.
+
+- **[MUFFIN 68k](https://huggingface.co/datasets/Reza8848/MUFFIN_68k)**
+
 ## 🤖 Model Release
+
+We fine-tune **T5-3B** and **T5-11B** on MUFFIN. Our fine-tuning code is based on [Tk-Instruct](https://github.com/yizhongw/Tk-Instruct/tree/main). The fine-tuned models are available on the HuggingFace 🤗.
+
+- **[MUFFIN-T5-3B](https://huggingface.co/Reza8848/MUFFIN-T5-3B)**
+- **[MUFFIN-T5-11B](https://huggingface.co/Reza8848/MUFFIN-T5-11B)**
 
 
 ## 🦾 Data Curation
@@ -20,13 +62,16 @@ As shown in the above illustration, in this work, we mainly adopt two different 
 - **Instruction Brainstorm**: Let LLMs generate instructions based on the input (and its facets).
 - **Instruction Rematching**: Reusing existing human-crafted instructions on the input, evaluated by LLMs.
 
-#### Project Structure
+
+#### 0. Environment Setup
 
 ```bash
+conda create -n muffin_data python=3.8.5
+conda activate muffin_data
+pip install -r requirements.txt
 ```
 
-
-#### Input Collection
+#### 1. Input Collection
 
 First, we have to collect the input texts. In our paper, we use two distinct input sources to promote data diversity, namely the inputs from [Super-Natural Instructions](https://instructions.apps.allenai.org/) (the training set) and [Dolma](https://huggingface.co/datasets/allenai/dolma). 
 
@@ -53,7 +98,7 @@ The most important field of this json object is the `input`. As for the other fi
 
 
 
-#### Instruction Brainstorm
+#### 2. Instruction Brainstorm
 
 We adopt two-step instruction generation: 1) ask LLMs (ChatGPT) to recognize various facets (aka attribute) of the given input; 2) using the recognized facets as **hints**, ask LLMs (ChatGPT) to generate instructions. 
 
@@ -67,7 +112,7 @@ The generated brainstormed instructions will be saved at `data/brainstorm_1.json
 
 Feel free to modify the shell script to try with other API models. 
 
-#### Instruction Rematching
+#### 3. Instruction Rematching
 
 We collect existing high-quality human instructions (from SuperNI) and let LLMs (GPT-4 in this case) to evaluate each instruction on the given input (*can the given input and instruction form a valid task?*).
 
@@ -100,7 +145,7 @@ sh scripts/instruction_remataching.sh [args_1] [args_2]  # args_1: json file con
 The generated rematched instructions will be saved at `data/rematched.json`.
 
 
-#### Data Merging
+#### 4. Data Merging
 
 Finally, we merge the brainstormed instructions and rematched instructions into a single json file. 
 
