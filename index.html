@@ -265,10 +265,30 @@
 
         <div class="content has-text-justified">
           <p>
-            In the realm of large language models (LLMs), enhancing instruction-following capability often involves curating expansive training data. This is achieved through two primary schemes:
-            i) Scaling-Inputs: Amplifying (input, output) pairs per task instruction, aiming for better instruction adherence. ii) Scaling Input-Free Tasks: Enlarging tasks, each composed of an (instruction, output) pair (without requiring a separate input anymore). However, LLMs under Scaling-Inputs tend to be overly sensitive to inputs, leading to misinterpretation or non-compliance with instructions. Conversely, Scaling Input-Free Tasks demands a substantial number of tasks but is less effective in instruction following when dealing with instances in Scaling-Inputs. This work introduces <span class="printerFont">MUFFIN</span>, a new scheme of instruction-following dataset curation. Specifically, we automatically Scale Tasks per Input by diversifying these tasks with various input facets. Experimental results across four zero-shot benchmarks, spanning both Scaling-Inputs and Scaling Input-Free Tasks schemes, reveal that LLMs, at various scales, trained on <span class="printerFont">MUFFIN</span> generally demonstrate superior instruction-following capabilities compared to those trained on the two aforementioned schemes.
-            We present the first method capable of photorealistically reconstructing a non-rigidly
-            deforming scene using photos/videos captured casually from mobile phones.
+            In the realm of large language models (LLMs), enhancing instruction-following capability often involves <u>curating expansive training data</u>. This is achieved through two primary schemes:
+          </p>
+          <style>
+            #indented {
+               padding-left: 50px;
+            }
+         </style>
+          <p id="indented">
+            (a). <u><b>Scaling-Inputs</b></u>: Amplifying (input, output) pairs per task instruction, aiming for better instruction adherence. 
+          </p>
+          <p id="indented">
+            (b). <u><b>Scaling Input-Free Tasks</b></u>: Enlarging tasks, each composed of an (instruction, output) pair, without requiring a separate input anymore.
+          </p>
+          <p> 
+          However, LLMs under <u><b>Scaling-Inputs</b></u> tend to be overly sensitive to inputs, leading to misinterpretation or non-compliance with instructions. Conversely, <u><b>Scaling Input-Free Tasks</b></u> demands a substantial number of tasks but is less effective in dealing with instances that require additional input text (e.g., reading comprehension tasks). 
+          </p>
+          <p>
+          This work introduces <span class="printerFont">MUFFIN</span>, a new scheme of instruction-following dataset curation: 
+          </p>
+          <p id="indented">
+            (c). <u><b>Scale Tasks per Input (Ours)</b></u>: Scale task for each input by using various input facets. 
+          </p>
+            <p>
+          Experimental results across four zero-shot benchmarks, spanning both (a) and (b) schemes, reveal that LLMs, at various scales, trained on <span class="printerFont">MUFFIN</span> generally demonstrate superior instruction-following capabilities compared to those trained on the two aforementioned schemes.  
           </p>
           <!-- <p>
             Our approach augments neural radiance fields
