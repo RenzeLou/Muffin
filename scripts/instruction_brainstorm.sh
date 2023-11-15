@@ -1,5 +1,6 @@
 data_file=$1
 api_key=$2
+save_name=${3:-"brainstorm"}
 
 # Facets Recognition
 echo "Facets Recognition..."
@@ -62,7 +63,7 @@ python generate_wrong_candidates.py --path ./data \
 
 python post_process/classification_expansion.py --path ./data \
  --data_files add_classification_candidates.json \
- --save_file brainstorm.json \
+ --save_file ${save_name}.json \
  --cls_num 1 \
  --add_constraints \
  --overwrite
