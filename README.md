@@ -11,6 +11,7 @@
 This repository contains the source code for reproducing the data curation of <img src="./figures/cupcake.png" width="20" height="20"> **[MUFFIN]()** (Multi-faceted Instructions).
 
 Our paper is available at: **[paper pdf](https://github.com/RenzeLou/Muffin/blob/github-page/static/paper/MUFFIN.pdf)**. 👈
+
 Also don't forget to check our **[website](https://renzelou.github.io/Muffin/)** for more details. 👈
 
 ---
