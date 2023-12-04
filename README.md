@@ -3,12 +3,17 @@
 
 <p align="center">
 <a href="https://renzelou.github.io/Muffin/"><img src="https://img.shields.io/badge/Website-red" alt="website" /></a>
+<a href="https://github.com/RenzeLou/Muffin/blob/github-page/static/paper/MUFFIN.pdf"><img src="https://img.shields.io/badge/Paper-orange" alt="paper" /></a>
   <a href="https://github.com/RenzeLou/Muffin/blob/master/LICENSE"><img src="https://img.shields.io/badge/LICENSE-MIT-blue" alt="license" /></a>
   <!-- <a href="https://github.com/RenzeLou/Muffin"><img src="https://img.shields.io/badge/Python-3.8-green" alt="python" /></a> -->
 </p>
 
 This repository contains the source code for reproducing the data curation of <img src="./figures/cupcake.png" width="20" height="20"> **[MUFFIN]()** (Multi-faceted Instructions).
 
+Our paper is available at: **[paper pdf](https://github.com/RenzeLou/Muffin/blob/github-page/static/paper/MUFFIN.pdf)**. 👈
+Also don't forget to check our **[website](https://renzelou.github.io/Muffin/)** for more details. 👈
+
+---
 
 <p align="center" width="100%">
 <a ><img src="./figures/paradigms.png" alt="paradigm" style="width: 90%; min-width: 300px; display: block; margin: auto;"></a>
@@ -160,7 +165,14 @@ The final data will be saved at `data/muffin_final_data.json`.
 
 Please kindly cite our paper if you use any resources in this repository:
 
+<!-- TODO: has to be updated -->
 ```
+@misc{Lou2023MUFFIN,
+      title={MUFFIN: Curating Multi-Faceted Instructions for Improving Instruction-Following}, 
+      author={Renze Lou and Kai Zhang and Jian Xie and Yuxuan Sun and Janice Ahn and Hanzi Xu and Yu su and Wenpeng Yin},
+      year={2023},
+      primaryClass={cs.CL}
+}
 ```
 
 
