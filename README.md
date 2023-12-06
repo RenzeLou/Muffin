@@ -8,9 +8,9 @@
   <!-- <a href="https://github.com/RenzeLou/Muffin"><img src="https://img.shields.io/badge/Python-3.8-green" alt="python" /></a> -->
 </p>
 
-This repository contains the source code for reproducing the data curation of <img src="./figures/cupcake.png" width="20" height="20"> **[MUFFIN]()** (Multi-faceted Instructions).
+This repository contains the source code for reproducing the data curation of <img src="./figures/cupcake.png" width="20" height="20"> **[MUFFIN](https://arxiv.org/abs/2312.02436)** (Multi-faceted Instructions).
 
-Our paper is available at: **[paper pdf](https://github.com/RenzeLou/Muffin/blob/github-page/static/paper/MUFFIN.pdf)**. 👈
+Our paper is available at: **[paper pdf](https://arxiv.org/abs/2312.02436)**. 👈
 
 Also don't forget to check our **[website](https://renzelou.github.io/Muffin/)** for more details. 👈
 
