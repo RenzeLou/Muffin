@@ -166,12 +166,14 @@ The final data will be saved at `data/muffin_final_data.json`.
 
 Please kindly cite our paper if you use any resources in this repository:
 
-<!-- TODO: has to be updated -->
+
 ```
 @misc{Lou2023MUFFIN,
       title={MUFFIN: Curating Multi-Faceted Instructions for Improving Instruction-Following}, 
       author={Renze Lou and Kai Zhang and Jian Xie and Yuxuan Sun and Janice Ahn and Hanzi Xu and Yu su and Wenpeng Yin},
       year={2023},
+      eprint={2312.02436},
+      archivePrefix={arXiv},
       primaryClass={cs.CL}
 }
 ```
