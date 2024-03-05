@@ -373,6 +373,65 @@
 </div>
 
 
+<!-- data analysis. -->
+<div class="columns is-centered has-text-centered">
+  <div class="column is-four-fifths">
+    <h2 class="title is-3">Data Analysis</h2>
+
+<!-- data statistics -->
+<section class="hero">
+  <div class="hero-body">
+      <div class="container is-max-desktop">
+          <div class="columns is-centered">
+              <div class="column is-full">
+                  <div class="item">
+                      <!-- Your image here -->
+                      <img src="static/images/data_statistics.png" alt="data_statistics" />
+                      <h3 class="subtitle" style="text-align:center; font-size: 16px;">
+                          Table 1: Statistics of <span class="printerFont">MUFFIN</span>.
+                      </h3>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</section>
+
+
+<div class="content has-text-justified">
+<p>
+  Table 1 lists the detailed statistics of the 68K (instruction, input, output) instances of <span class="printerFont">MUFFIN</span>. It is worth mentioning that some inputs will share the same instructions because of our "instruction rematching" mechanism.  
+</p>
+</div>
+
+<!-- data quality -->
+<section class="hero">
+<div class="hero-body">
+    <div class="container is-max-desktop">
+        <div class="columns is-centered">
+            <div class="column is-full">
+                <div class="item">
+                    <!-- Your image here -->
+                    <img src="static/images/data_quality.png" alt="data_quality" />
+                    <h3 class="subtitle" style="text-align:center; font-size: 16px;">
+                        Figure 3: Human evaluation on the data quality. 
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+
+
+<div class="content has-text-justified">
+<p>
+  To assess data quality, we randomly selected 200 instances from our dataset (200 random inputs, 1 random instruction per input). Two NLP graduate students were involved in the evaluation. Following previous works, each annotator answered three questions for each instance: i) determining if the instruction describes a valid task (A1) when only the instruction is provided, ii) assessing if the instruction appropriately matches the input when only the instruction-input pair is presented (A2), and iii) evaluating if the output correctly responds to the instruction and input (A3). We also recorded instances where all three fields were correct (A4). Figure 3 shows the correct ratio for each question.
+</p>
+</div>
+
+</div>
+</div>
 
 
 
@@ -393,7 +452,7 @@
                             <!-- Your image here -->
                             <img src="static/images/main_table.png" alt="MainTable" />
                             <h2 class="subtitle"  style="text-align:center;">
-                                Table 1: Main results.
+                                Table 2: Main results.
                             </h2>
                         </div>
                     </div>
@@ -410,6 +469,32 @@
     8.03 ave. performance improvement of T5-11B, compared with the strongest baseline). Notably, <span class="printerFont">MUFFIN</span> can gain the comparable or even better performances, compared with the models trained on huam-crafted datasets (e.g., SuperNI-Train, T0, T0++).
   </p>
 </div>
+
+<!-- Main Table Overview -->
+<section class="hero">
+  <div class="hero-body">
+      <div class="container is-max-desktop">
+          <div class="columns is-centered">
+              <div class="column is-full">
+                  <div class="item">
+                      <!-- Your image here -->
+                      <img src="static/images/main_table_llama.png" alt="MainTable_llama" />
+                      <h2 class="subtitle"  style="text-align:center;">
+                          Table 3: Results based on Llama2-13B.
+                      </h2>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</section>
+
+<div class="content has-text-justified">
+<p>
+Additionally, we add results based on Llama2 to further enhance the aforementioned conclusion, where we fine-tune Llama2 with LoRA (low-rank adaption) on various datasets. We can find that our performances are consistent across different models (i.e., encoder-decoder and decoder-only).
+</p>
+</div>
+
 </div>
 </div>
 
@@ -430,7 +515,7 @@
                             <!-- Your image here -->
                             <img src="static/images/human_eval_1.jpg" alt="Human_eval_1" />
                             <h3 class="subtitle" style="text-align:center; font-size: 16px;">
-                                Table 2: Human evaluation acceptance ratio. We randomly sample 200 instances from each benchmark
+                                Table 4: Human evaluation acceptance ratio. We randomly sample 200 instances from each benchmark
                                 and let workers evaluate different systems’ outputs.
                             </h3>
                         </div>
@@ -443,7 +528,7 @@
 
     <div class="content has-text-justified">
       <p>
-        Table 2 shows the human evaluation results (acceptance ratios). Compared with the strongest results among all the 8 baselines, <span class="printerFont">MUFFIN</span> mostly
+        Table 4 shows the human evaluation results (acceptance ratios). Compared with the strongest results among all the 8 baselines, <span class="printerFont">MUFFIN</span> mostly
         results in better human acceptance ratios with large margins (except for the tiny lower result on
         T0-Eval).
       </p>
@@ -459,7 +544,7 @@
                           <!-- Your image here -->
                           <img src="static/images/human_eval_2.jpg" alt="Human_eval_2" />
                           <h3 class="subtitle" style="text-align:center; font-size: 16px;">
-                              Table 3: Pair-wise comparison between <span class="printerFont">MUFFIN</span> (Ours) and three strong baselines, namely Self-Instruction (Self-Inst.), Unnatural Instruction (Unnatural), and SuperNI, across four benchmarks.
+                              Table 5: Pair-wise comparison between <span class="printerFont">MUFFIN</span> (Ours) and three strong baselines, namely Self-Instruction (Self-Inst.), Unnatural Instruction (Unnatural), and SuperNI, across four benchmarks.
                           </h3>
                       </div>
                   </div>
@@ -471,8 +556,70 @@
 
   <div class="content has-text-justified">
     <p>
-      Table 3 shows the pair-wise comparison results between <span class="printerFont">MUFFIN</span> and other three baselines. Compared with the LLM-generated datasets (<a href="https://github.com/yizhongw/self-instruct/tree/main">Self-Instruction</a> and <a href="https://github.com/orhonovich/unnatural-instructions">Unnatural Instruction</a>), our <span class="printerFont">MUFFIN</span>
+      Table 5 shows the pair-wise comparison results between <span class="printerFont">MUFFIN</span> and other three baselines. Compared with the LLM-generated datasets (<a href="https://github.com/yizhongw/self-instruct/tree/main">Self-Instruction</a> and <a href="https://github.com/orhonovich/unnatural-instructions">Unnatural Instruction</a>), our <span class="printerFont">MUFFIN</span>
       consistently gains higher human preferences across four benchmarks, aligning with the previous conclusion. Notebly, owing to the diverse tasks and our novel paradigm, <span class="printerFont">MUFFIN</span> can even surpass the high-quality human-crafted SuperNI on three out of four benchmarks.
+    </p>
+  </div>
+
+</div>
+</div>
+
+
+<!-- further analysis. -->
+<div class="columns is-centered has-text-centered">
+  <div class="column is-four-fifths">
+    <h2 class="title is-3">Further Analysis</h2>
+
+      <!-- Scaling trends -->
+      <section class="hero">
+        <div class="hero-body">
+            <div class="container is-max-desktop">
+                <div class="columns is-centered">
+                    <div class="column is-full">
+                        <div class="item">
+                            <!-- Your image here -->
+                            <img src="static/images/scale_trends.png" alt="scale_trend" />
+                            <h3 class="subtitle" style="text-align:center; font-size: 16px;">
+                                Figure 4: The scaling trends comparison between
+                                <span class="printerFont">MUFFIN</span> and the previous baseline datasets (average performances on all four benchmarks).
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <div class="content has-text-justified">
+      <p>
+        For all those baseline datasets from the "direct comparison" in Table 2, we randomly sample subsets from them and train T5-3B on the subsets to show the performance trends (10%, 30%, 50%, 80%, 100%). As shown in Figure 4, <span class="printerFont">MUFFIN</span> exceeds the baselines by a noteworthy margin (average scores on four evaluation benchmarks). Other baselines may only be comparable to our data results when they continue to be scaled to several times the size of our data. Therefore, we conjecture that our paradigm is more efficient than simply collecting more data from the other paradigms.
+      </p>
+    </div>
+
+    <!-- mix superni -->
+    <section class="hero">
+      <div class="hero-body">
+          <div class="container is-max-desktop">
+              <div class="columns is-centered">
+                  <div class="column is-full">
+                      <div class="item">
+                          <!-- Your image here -->
+                          <img src="static/images/mix_superni_muffin.png" alt="mix_human" />
+                          <h3 class="subtitle" style="text-align:center; font-size: 16px;">
+                              Figure 5: The performance of the mixture of <span class="printerFont">MUFFIN</span> and SuperNI (human-craft data). 
+                          </h3>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </section>
+
+
+  <div class="content has-text-justified">
+    <p>
+      We mix <span class="printerFont">MUFFIN</span> with the training set of SuperNI, w.r.t. various proportions, where the proportion means how many instances are from <span class="printerFont">MUFFIN</span>. Then, we train T5-3B on these mixtures and report the average performances on the four benchmarks. As illustrated in Figure 5, interestingly, after mixing <span class="printerFont">MUFFIN</span> and the human-annotated SuperNI, the performance drops even worse than only using <span class="printerFont">MUFFIN</span> for training. We conjecture possible reasons for this phenomenon: <strong>the dataset paradigm does affect the learning efficiency</strong> --- different dataset paradigms do obviously have various impacts on the model's performance. Therefore, combining two paradigms can even hurt the model's instruction-following performance, meaning the paradigm is critical.
     </p>
   </div>
 
