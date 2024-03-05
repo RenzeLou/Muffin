@@ -51,10 +51,22 @@ As shown in the figure (c) above, we follow a novel <u>**Scaling Tasks per Input
 
 ## 🤖 Model Release
 
-We fine-tune **T5-3B** and **T5-11B** on MUFFIN. Our fine-tuning code is based on [Tk-Instruct](https://github.com/yizhongw/Tk-Instruct/tree/main). The fine-tuned models are available on the HuggingFace 🤗.
+We fine-tune **T5** and **Llama2** on MUFFIN. Our fine-tuning code is based on [Tk-Instruct](https://github.com/yizhongw/Tk-Instruct/tree/main) and [Alpaca-lora](https://github.com/tloen/alpaca-lora). The fine-tuned model weights are available on the HuggingFace 🤗.
 
-- **[MUFFIN-T5-3B](https://huggingface.co/Reza8848/MUFFIN-T5-3B)**
-- **[MUFFIN-T5-11B](https://huggingface.co/Reza8848/MUFFIN-T5-11B)**
+- **[MUFFIN-T5 (3B)](https://huggingface.co/Reza8848/MUFFIN-T5-3B)**
+- **[MUFFIN-T5 (11B)](https://huggingface.co/Reza8848/MUFFIN-T5-11B)**
+- **[MUFFIN-Llama2 (7B)](https://huggingface.co/Reza8848/MUFFIN-Llama2-lora-7B)**
+- **[MUFFIN-Llama2 (13B)](https://huggingface.co/Reza8848/MUFFIN-Llama2-lora-13B)**
+
+
+|                   | SuperNI  |   SuperNI    |   SuperNI    | MMLU  | T0-Eval |  BBH  |
+| ----------------- | :------: | :----------: | :----------: | :---: | :-----: | :---: |
+|                   | EM (CLS) | RougeL (GEN) | RougeL (ALL) |  EM   |   EM    |  EM   |
+| MUFFIN-T5-3B      |  33.84   |    49.52     |    42.63     | 29.75 |  44.45  | 14.25 |
+| MUFFIN-T5-11B     |  40.20   |    50.69     |    48.32     | 41.83 |  57.74  | 20.53 |
+| MUFFIN-Llama2-7B  |  36.70   |    50.55     |    45.94     | 44.92 |  53.49  | 16.56 |
+| MUFFIN-Llama2-13B |  40.85   |    57.71     |    49.71     | 37.67 |  55.98  | 19.01 |
+
 
 
 ## 🦾 Data Curation
@@ -138,6 +150,7 @@ Where the `judge` field is the judgement label to decide whether the given instr
 
 
 > **Note**
+>
 > Similarly, besides SuperNI, feel free to use candidate pairs with any other human instructions and input texts. 
 
 
